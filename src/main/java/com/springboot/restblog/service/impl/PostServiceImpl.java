@@ -8,6 +8,9 @@ import com.springboot.restblog.service.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class PostServiceImpl implements IPostService {
 
@@ -28,5 +31,14 @@ public class PostServiceImpl implements IPostService {
 
         PostDTO postResponse = converter.toDTO(newPost);
         return postResponse;
+    }
+
+    @Override
+    public List<PostDTO> getAll() {
+        List<PostEntity> postEntities = postRepository.findAll();
+
+        return postEntities.stream()
+                .map(post -> converter.toDTO(post))
+                .collect(Collectors.toList());
     }
 }
