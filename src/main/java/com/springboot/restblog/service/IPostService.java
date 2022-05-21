@@ -9,4 +9,5 @@ public interface IPostService {
     PostDTO savePost(PostDTO postDTO);
     List<PostDTO> getAll();
     PostDTO getById(Integer id);
+    void deleteById(Integer id);
 }
