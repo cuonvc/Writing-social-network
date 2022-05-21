@@ -1,4 +1,4 @@
-package com.springboot.restblog.entity;
+package com.springboot.restblog.model.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
