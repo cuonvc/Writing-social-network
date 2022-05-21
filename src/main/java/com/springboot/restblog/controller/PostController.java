@@ -32,4 +32,9 @@ public class PostController {
     public List<PostDTO> getAllPost() {
         return iPostService.getAll();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") Integer id) {
+        return ResponseEntity.ok(iPostService.getById(id));
+    }
 }
