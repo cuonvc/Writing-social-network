@@ -8,8 +8,17 @@ import org.springframework.stereotype.Component;
 public class PostConverter {
 
     //convert DTO to entity
+    //not set id
     public PostEntity toEntity(PostDTO dto) {
         PostEntity entity = new PostEntity();
+        entity.setTitle(dto.getTitle());
+        entity.setDescription(dto.getDescription());
+        entity.setContent(dto.getContent());
+
+        return entity;
+    }
+
+    public PostEntity toEntity(PostDTO dto, PostEntity entity) {
         entity.setTitle(dto.getTitle());
         entity.setDescription(dto.getDescription());
         entity.setContent(dto.getContent());

@@ -27,11 +27,22 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public PostDTO savePost(PostDTO postDTO) {
-        PostEntity postEntity = converter.toEntity(postDTO);
-        PostEntity newPost = postRepository.save(postEntity);
 
-        PostDTO postResponse = converter.toDTO(newPost);
-        return postResponse;
+        PostEntity postEntity;
+
+        if (postDTO.getId() != null) {  //post is existed
+            //update
+            PostEntity oldPost = postRepository.findById(postDTO.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDTO.getId()));
+
+            postEntity = converter.toEntity(postDTO, oldPost);
+        } else {
+            //create
+            postEntity = converter.toEntity(postDTO);
+        }
+
+        PostEntity newPost = postRepository.save(postEntity);
+        return converter.toDTO(newPost);
     }
 
     @Override

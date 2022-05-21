@@ -37,4 +37,18 @@ public class PostController {
     public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.ok(iPostService.getById(id));
     }
+
+    //- ResponseEntity<>(x, HttpStatus.OK) - You can use this method to pass data in the
+    // method body along with a any status code (any status code 200, 201, 204).
+    //- ResponseEntity.ok(x) - use this method to pass data in the method body with
+    // only status code 200 (OK).
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PostDTO> updatePost(@PathVariable(name = "id") Integer id,
+                                              @RequestBody PostDTO postDTO) {
+        postDTO.setId(id);
+
+        PostDTO postResponse = iPostService.savePost(postDTO);
+        return new ResponseEntity<>(postResponse, HttpStatus.OK);
+    }
 }
