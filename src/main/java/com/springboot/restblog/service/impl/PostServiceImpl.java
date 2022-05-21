@@ -24,9 +24,9 @@ public class PostServiceImpl implements IPostService {
     @Override
     public PostDTO savePost(PostDTO postDTO) {
         PostEntity postEntity = converter.toEntity(postDTO);
-        postRepository.save(postEntity);
+        PostEntity newPost = postRepository.save(postEntity);
 
-        PostDTO postResponse = converter.toDTO(postEntity);
+        PostDTO postResponse = converter.toDTO(newPost);
         return postResponse;
     }
 }
