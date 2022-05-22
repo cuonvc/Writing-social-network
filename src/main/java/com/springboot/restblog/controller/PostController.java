@@ -28,9 +28,14 @@ public class PostController {
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
 
+    //default start pageNo = 0 (start with number record 1)
     @GetMapping
-    public List<PostDTO> getAllPost() {
-        return iPostService.getAll();
+    public List<PostDTO> getAllPost(@RequestParam(value = "pageNo",
+                                        defaultValue = "1", required = false) Integer pageNo,
+                                    @RequestParam(value = "pageSize",
+                                        defaultValue = "5", required = false) Integer pageSize) {
+
+        return iPostService.getAll(pageNo - 1, pageSize);
     }
 
     @GetMapping("/{id}")

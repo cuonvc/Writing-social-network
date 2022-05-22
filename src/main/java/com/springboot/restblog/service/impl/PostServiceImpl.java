@@ -7,6 +7,9 @@ import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.service.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,8 +49,13 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public List<PostDTO> getAll() {
-        List<PostEntity> postEntities = postRepository.findAll();
+    public List<PostDTO> getAll(Integer pageNo, Integer pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+
+        Page<PostEntity> postDTOS = postRepository.findAll(pageable);
+
+        List<PostEntity> postEntities = postDTOS.getContent();
 
         return postEntities.stream()
                 .map(post -> converter.toDTO(post))
