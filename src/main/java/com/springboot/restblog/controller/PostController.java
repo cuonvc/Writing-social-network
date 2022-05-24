@@ -1,6 +1,7 @@
 package com.springboot.restblog.controller;
 
 import com.springboot.restblog.model.payload.PostDTO;
+import com.springboot.restblog.model.payload.PostResponse;
 import com.springboot.restblog.service.IPostService;
 import com.springboot.restblog.service.impl.PostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,9 @@ public class PostController {
 
     //default start pageNo = 0 (start with number record 1)
     @GetMapping
-    public List<PostDTO> getAllPost(@RequestParam(value = "pageNo",
+    public PostResponse getAllPost(@RequestParam(value = "pageNo",
                                         defaultValue = "1", required = false) Integer pageNo,
-                                    @RequestParam(value = "pageSize",
+                                   @RequestParam(value = "pageSize",
                                         defaultValue = "5", required = false) Integer pageSize) {
 
         return iPostService.getAll(pageNo - 1, pageSize);

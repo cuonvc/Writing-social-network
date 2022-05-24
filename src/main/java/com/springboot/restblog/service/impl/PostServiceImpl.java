@@ -4,6 +4,7 @@ import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.PostConverter;
 import com.springboot.restblog.model.entity.PostEntity;
 import com.springboot.restblog.model.payload.PostDTO;
+import com.springboot.restblog.model.payload.PostResponse;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.service.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public List<PostDTO> getAll(Integer pageNo, Integer pageSize) {
+    public PostResponse getAll(Integer pageNo, Integer pageSize) {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
@@ -57,9 +58,20 @@ public class PostServiceImpl implements IPostService {
 
         List<PostEntity> postEntities = postDTOS.getContent();
 
-        return postEntities.stream()
+        List<PostDTO> contentList = postEntities.stream()
                 .map(post -> converter.toDTO(post))
                 .collect(Collectors.toList());
+
+        PostResponse postResponse = new PostResponse();
+
+        postResponse.setContent(contentList);
+        postResponse.setPageNo(postDTOS.getNumber() + 1); //mapping with controller
+        postResponse.setPageSize(postDTOS.getSize());
+        postResponse.setTotalElements((int) postDTOS.getTotalElements());
+        postResponse.setTotalPages(postDTOS.getTotalPages());
+        postResponse.setLast(postDTOS.isLast());
+
+        return postResponse;
     }
 
     @Override
