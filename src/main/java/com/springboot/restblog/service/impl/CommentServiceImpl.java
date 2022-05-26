@@ -1,5 +1,6 @@
 package com.springboot.restblog.service.impl;
 
+import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.CommentConverter;
 import com.springboot.restblog.model.entity.CommentEntity;
 import com.springboot.restblog.model.entity.PostEntity;
@@ -26,16 +27,18 @@ public class CommentServiceImpl implements ICommentService {
     public CommentDTO saveComment(Integer idPost, CommentDTO commentDTO) {
         CommentEntity commentEntity;
 
-        if (commentRepository.findById(commentDTO.getId()) == null) {
+        if (commentDTO.getId() == null) {
             //save
             commentEntity = converter.toEntity(commentDTO);
         } else {
             //update
-            CommentEntity oldComment = commentRepository.findById(commentDTO.getId()).get();
+            CommentEntity oldComment = commentRepository.findById(commentDTO.getId()).
+                    orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentDTO.getId()));
             commentEntity = converter.toEntity(oldComment, commentDTO);
         }
 
-        commentEntity.setPost(postRepository.findById(idPost).get());
+        commentEntity.setPost(postRepository.findById(idPost).
+                orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost)));
 
         CommentEntity newComment = commentRepository.save(commentEntity);
 
