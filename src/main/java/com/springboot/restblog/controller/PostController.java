@@ -4,6 +4,7 @@ import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PostResponse;
 import com.springboot.restblog.service.IPostService;
 import com.springboot.restblog.service.impl.PostServiceImpl;
+import com.springboot.restblog.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +33,13 @@ public class PostController {
     //default start pageNo = 0 (start with number record 1)
     @GetMapping
     public PostResponse getAllPost(@RequestParam(value = "pageNo",
-                                       defaultValue = "1", required = false) Integer pageNo,
+                                       defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
                                    @RequestParam(value = "pageSize",
-                                       defaultValue = "5", required = false) Integer pageSize,
+                                       defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
                                    @RequestParam(value = "sortBy",
-                                       defaultValue = "id", required = false) String sortBy,
+                                       defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
                                    @RequestParam(value = "sortDir",
-                                       defaultValue = "asc") String sortDir) {
+                                       defaultValue = AppConstants.SORT_DIRECTION) String sortDir) {
 
         return iPostService.getAll(pageNo - 1, pageSize, sortBy, sortDir);
     }
