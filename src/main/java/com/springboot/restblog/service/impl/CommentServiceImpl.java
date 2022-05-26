@@ -1,5 +1,6 @@
 package com.springboot.restblog.service.impl;
 
+import com.springboot.restblog.exception.APIException;
 import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.CommentConverter;
 import com.springboot.restblog.model.entity.CommentEntity;
@@ -9,7 +10,11 @@ import com.springboot.restblog.repository.CommentRepository;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.service.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl implements ICommentService {
@@ -43,5 +48,29 @@ public class CommentServiceImpl implements ICommentService {
         CommentEntity newComment = commentRepository.save(commentEntity);
 
         return converter.toDTO(newComment);
+    }
+
+    public CommentDTO getById(Integer id, Integer idPost) {
+
+        CommentEntity commentById = commentRepository.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
+
+        PostEntity postById = postRepository.findById(idPost).
+                orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
+
+        if (!commentById.getPost().getId().equals(postById.getId())) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
+        }
+
+        return converter.toDTO(commentById);
+    }
+
+    @Override
+    public List<CommentDTO> getCommentsByPostId(Integer idPost) {
+        List<CommentEntity> entityList = commentRepository.findByPostId(idPost);
+        List<CommentDTO> commentList = entityList.stream().map(comment -> converter.toDTO(comment))
+                .collect(Collectors.toList());
+
+        return commentList;
     }
 }
