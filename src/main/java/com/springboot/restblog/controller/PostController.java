@@ -32,11 +32,15 @@ public class PostController {
     //default start pageNo = 0 (start with number record 1)
     @GetMapping
     public PostResponse getAllPost(@RequestParam(value = "pageNo",
-                                        defaultValue = "1", required = false) Integer pageNo,
+                                       defaultValue = "1", required = false) Integer pageNo,
                                    @RequestParam(value = "pageSize",
-                                        defaultValue = "5", required = false) Integer pageSize) {
+                                       defaultValue = "5", required = false) Integer pageSize,
+                                   @RequestParam(value = "sortBy",
+                                       defaultValue = "id", required = false) String sortBy,
+                                   @RequestParam(value = "sortDir",
+                                       defaultValue = "asc") String sortDir) {
 
-        return iPostService.getAll(pageNo - 1, pageSize);
+        return iPostService.getAll(pageNo - 1, pageSize, sortBy, sortDir);
     }
 
     @GetMapping("/{id}")
