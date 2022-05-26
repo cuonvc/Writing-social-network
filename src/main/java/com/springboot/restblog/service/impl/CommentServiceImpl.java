@@ -37,13 +37,14 @@ public class CommentServiceImpl implements ICommentService {
             commentEntity = converter.toEntity(commentDTO);
         } else {
             //update
-            CommentEntity oldComment = commentRepository.findById(commentDTO.getId()).
-                    orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentDTO.getId()));
+            CommentEntity oldComment = commentRepository.findById(commentDTO.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentDTO.getId()));
+
             commentEntity = converter.toEntity(oldComment, commentDTO);
         }
 
-        commentEntity.setPost(postRepository.findById(idPost).
-                orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost)));
+        commentEntity.setPost(postRepository.findById(idPost)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost)));
 
         CommentEntity newComment = commentRepository.save(commentEntity);
 
@@ -52,11 +53,11 @@ public class CommentServiceImpl implements ICommentService {
 
     public CommentDTO getById(Integer id, Integer idPost) {
 
-        CommentEntity commentById = commentRepository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
+        CommentEntity commentById = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
 
-        PostEntity postById = postRepository.findById(idPost).
-                orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
+        PostEntity postById = postRepository.findById(idPost)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
 
         if (!commentById.getPost().getId().equals(postById.getId())) {
             throw new APIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
@@ -68,6 +69,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     public List<CommentDTO> getCommentsByPostId(Integer idPost) {
         List<CommentEntity> entityList = commentRepository.findByPostId(idPost);
+
         List<CommentDTO> commentList = entityList.stream().map(comment -> converter.toDTO(comment))
                 .collect(Collectors.toList());
 
