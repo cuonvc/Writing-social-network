@@ -25,4 +25,12 @@ public class CommentConverter {
 
         return entity;
     }
+
+    public CommentEntity toEntity(CommentEntity entity, CommentDTO dto) {
+        entity.setName(dto.getName());
+        entity.setEmail(dto.getEmail());
+        entity.setContent(dto.getContent());
+
+        return entity;
+    }
 }

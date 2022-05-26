@@ -24,7 +24,17 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public CommentDTO saveComment(Integer idPost, CommentDTO commentDTO) {
-        CommentEntity commentEntity = converter.toEntity(commentDTO);
+        CommentEntity commentEntity;
+
+        if (commentRepository.findById(commentDTO.getId()) == null) {
+            //save
+            commentEntity = converter.toEntity(commentDTO);
+        } else {
+            //update
+            CommentEntity oldComment = commentRepository.findById(commentDTO.getId()).get();
+            commentEntity = converter.toEntity(oldComment, commentDTO);
+        }
+
         commentEntity.setPost(postRepository.findById(idPost).get());
 
         CommentEntity newComment = commentRepository.save(commentEntity);
