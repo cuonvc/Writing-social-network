@@ -54,22 +54,22 @@ public class PostServiceImpl implements IPostService {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize);
 
-        Page<PostEntity> postDTOS = postRepository.findAll(pageable);
+        Page<PostEntity> postEntities = postRepository.findAll(pageable);
 
-        List<PostEntity> postEntities = postDTOS.getContent();
+        List<PostEntity> postEntitiesList = postEntities.getContent();
 
-        List<PostDTO> contentList = postEntities.stream()
+        List<PostDTO> contentList = postEntitiesList.stream()
                 .map(post -> converter.toDTO(post))
                 .collect(Collectors.toList());
 
         PostResponse postResponse = new PostResponse();
 
         postResponse.setContent(contentList);
-        postResponse.setPageNo(postDTOS.getNumber() + 1); //mapping with controller
-        postResponse.setPageSize(postDTOS.getSize());
-        postResponse.setTotalElements((int) postDTOS.getTotalElements());
-        postResponse.setTotalPages(postDTOS.getTotalPages());
-        postResponse.setLast(postDTOS.isLast());
+        postResponse.setPageNo(postEntities.getNumber() + 1); //mapping with controller
+        postResponse.setPageSize(postEntities.getSize());
+        postResponse.setTotalElements((int) postEntities.getTotalElements());
+        postResponse.setTotalPages(postEntities.getTotalPages());
+        postResponse.setLast(postEntities.isLast());
 
         return postResponse;
     }
