@@ -51,4 +51,11 @@ public class CommentController {
         List<CommentDTO> listResponse = commentService.getCommentsByPostId(idPost);
         return listResponse;
     }
+
+    @DeleteMapping("/{id}")
+    public HttpStatus deleteCommentById(@PathVariable(name = "id") Integer id,
+                                  @PathVariable(name = "postId") Integer idPost) {
+        commentService.deleteById(id, idPost);
+        return HttpStatus.OK;
+    }
 }

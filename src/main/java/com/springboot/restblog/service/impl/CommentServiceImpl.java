@@ -75,4 +75,21 @@ public class CommentServiceImpl implements ICommentService {
 
         return commentList;
     }
+
+    @Override
+    public void deleteById(Integer id, Integer idPost) {
+        CommentEntity commentById = commentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
+
+        PostEntity postById = postRepository.findById(idPost)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
+
+        if (!commentById.getPost().getId().equals(postById.getId())) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
+        }
+
+        commentRepository.delete(commentById);
+    }
+
+
 }
