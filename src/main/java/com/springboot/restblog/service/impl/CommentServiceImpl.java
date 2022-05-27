@@ -28,6 +28,14 @@ public class CommentServiceImpl implements ICommentService {
     @Autowired
     private CommentConverter converter;
 
+    public CommentServiceImpl(CommentRepository commentRepository,
+                              PostRepository postRepository,
+                              CommentConverter converter) {
+        this.commentRepository = commentRepository;
+        this.postRepository = postRepository;
+        this.converter = converter;
+    }
+
     @Override
     public CommentDTO saveComment(Integer idPost, CommentDTO commentDTO) {
         CommentEntity commentEntity;

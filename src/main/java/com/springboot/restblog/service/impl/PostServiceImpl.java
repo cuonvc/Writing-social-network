@@ -26,8 +26,9 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private PostConverter converter;
 
-    public PostServiceImpl(PostRepository postRepository) {
+    public PostServiceImpl(PostRepository postRepository, PostConverter converter) {
         this.postRepository = postRepository;
+        this.converter = converter;
     }
 
     @Override
