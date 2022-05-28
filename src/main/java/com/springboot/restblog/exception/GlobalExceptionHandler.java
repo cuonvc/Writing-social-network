@@ -33,6 +33,7 @@ public class GlobalExceptionHandler {
     }
 
     //handle global exception
+    //ex: http://localhost:8080/api/posts/hahahahalinhtinh
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleGlobalException(Exception exception, WebRequest webRequest) {
         ErrorDetails errorDetails
