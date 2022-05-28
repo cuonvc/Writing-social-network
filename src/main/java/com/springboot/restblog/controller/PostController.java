@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -25,7 +26,7 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostDTO postDTO) {
+    public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO) {
         PostDTO postResponse = iPostService.savePost(postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
@@ -55,7 +56,7 @@ public class PostController {
     // only status code 200 (OK).
 
     @PutMapping("/{id}")
-    public ResponseEntity<PostDTO> updatePost(@PathVariable(name = "id") Integer id,
+    public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "id") Integer id,
                                               @RequestBody PostDTO postDTO) {
         postDTO.setId(id);
 
