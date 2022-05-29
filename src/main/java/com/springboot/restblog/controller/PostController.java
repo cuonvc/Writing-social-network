@@ -31,7 +31,6 @@ public class PostController {
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
 
-    //default start pageNo = 0 (start with number record 1)
     @GetMapping
     public PostResponse getAllPost(@RequestParam(value = "pageNo",
                                        defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
@@ -42,7 +41,7 @@ public class PostController {
                                    @RequestParam(value = "sortDir",
                                        defaultValue = AppConstants.SORT_DIRECTION) String sortDir) {
 
-        return iPostService.getAll(pageNo - 1, pageSize, sortBy, sortDir);
+        return iPostService.getAll(pageNo, pageSize, sortBy, sortDir);
     }
 
     @GetMapping("/{id}")

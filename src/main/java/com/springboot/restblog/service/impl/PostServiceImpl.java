@@ -71,7 +71,7 @@ public class PostServiceImpl implements IPostService {
         PostResponse postResponse = new PostResponse();
 
         postResponse.setContent(contentList);
-        postResponse.setPageNo(postEntities.getNumber() + 1); //mapping with controller
+        postResponse.setPageNo(postEntities.getNumber());
         postResponse.setPageSize(postEntities.getSize());
         postResponse.setTotalElements((int) postEntities.getTotalElements());
         postResponse.setTotalPages(postEntities.getTotalPages());
