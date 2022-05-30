@@ -26,14 +26,14 @@ public class PostController {
         this.iPostService = iPostService;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO) {
         PostDTO postResponse = iPostService.savePost(postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping
     public PostResponse getAllPost(@RequestParam(value = "pageNo",
                                        defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,

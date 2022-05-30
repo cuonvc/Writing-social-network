@@ -1,6 +1,8 @@
 package com.springboot.restblog.model.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -10,8 +12,9 @@ import java.util.Set;
         @UniqueConstraint(columnNames = "username"),
         @UniqueConstraint(columnNames = "email")
 })
-@Data
-public class User {
+@Getter
+@Setter
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,5 +36,5 @@ public class User {
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    Set<Role> roles;
+    Set<RoleEntity> roles;
 }
