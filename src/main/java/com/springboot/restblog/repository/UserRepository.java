@@ -10,6 +10,8 @@ import java.util.Optional;
 //@Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
+    //https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#appendix.query.method.subject
+
     Optional<UserEntity> findByEmail(String email);
     Optional<UserEntity> findByUsername(String username);
     Optional<UserEntity> findByUsernameOrEmail(String username, String email);
