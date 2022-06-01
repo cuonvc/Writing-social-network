@@ -12,8 +12,11 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    @Value("${app.jwt-secret}")
+    // Đoạn secret này là bí mật, chỉ có phía server biết
+    @Value("${app.jwt-secret}")  //map from application.properties
     private String jwtSecret;
+
+    //Thời gian có hiệu lực của chuỗi jwt
     @Value("${app.jwt-expiration-milliseconds}")
     private int jwtExpirationInMs;  //milliseconds
 
