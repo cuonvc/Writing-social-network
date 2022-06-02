@@ -6,13 +6,14 @@ import com.springboot.restblog.service.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/post/{postId}/comments")
+@RequestMapping("/api/v1/post/{postId}/comments")
 public class CommentController {
 
     @Autowired
@@ -53,6 +54,7 @@ public class CommentController {
         return listResponse;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public HttpStatus deleteCommentById(@PathVariable(name = "id") Integer id,
                                   @PathVariable(name = "postId") Integer idPost) {
