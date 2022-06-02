@@ -29,4 +29,8 @@ public class PostEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentEntity> comments = new HashSet<>();
+
+    public void setComments(Set<CommentEntity> comments) {
+        this.comments.addAll(comments);
+    }
 }

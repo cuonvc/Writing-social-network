@@ -28,24 +28,24 @@ public class PostConverter {
 
     //convert DTO to entity
     public PostEntity toEntity(PostDTO dto) {
-//        PostEntity entity = new PostEntity();
-//        entity.setTitle(dto.getTitle());
-//        entity.setDescription(dto.getDescription());
-//        entity.setContent(dto.getContent());
+        PostEntity entity = new PostEntity();
+        entity.setTitle(dto.getTitle());
+        entity.setDescription(dto.getDescription());
+        entity.setContent(dto.getContent());
 
         //replace
-        PostEntity entity = mapper.map(dto, PostEntity.class);
+//        PostEntity entity = mapper.map(dto, PostEntity.class);
 
         return entity;
     }
 
     public PostEntity toEntity(PostDTO dto, PostEntity entity) {
-//        entity.setTitle(dto.getTitle());
-//        entity.setDescription(dto.getDescription());
-//        entity.setContent(dto.getContent());
+        entity.setTitle(dto.getTitle());
+        entity.setDescription(dto.getDescription());
+        entity.setContent(dto.getContent());
 
         //replace
-        entity = mapper.map(dto, PostEntity.class);
+//        entity = mapper.map(dto, PostEntity.class);
 
         return entity;
     }

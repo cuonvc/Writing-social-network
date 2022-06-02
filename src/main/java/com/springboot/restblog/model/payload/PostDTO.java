@@ -1,14 +1,17 @@
 package com.springboot.restblog.model.payload;
 
 import com.springboot.restblog.model.entity.CommentEntity;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Getter
+@Setter
 public class PostDTO {
 
     private Integer id;
