@@ -57,7 +57,7 @@ public class PostController {
     //- ResponseEntity.ok(x) - use this method to pass data in the method body with
     // only status code 200 (OK).
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "id") Integer id,
                                               @RequestBody PostDTO postDTO) {
@@ -67,7 +67,7 @@ public class PostController {
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable(name = "id") Integer id) {
         iPostService.deleteById(id);
