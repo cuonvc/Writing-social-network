@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.Collections;
 
 @RestController
@@ -83,7 +84,7 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/admin/signup")
-    public ResponseEntity<?> registerAdmin(@RequestBody RegisterDTO registerDTO) {
+    public ResponseEntity<?> registerAdmin(@Valid @RequestBody RegisterDTO registerDTO) {
         if (userRepository.existsByUsername(registerDTO.getUsername())) {
             return new ResponseEntity<>("Username is already taken", HttpStatus.BAD_REQUEST);
         }

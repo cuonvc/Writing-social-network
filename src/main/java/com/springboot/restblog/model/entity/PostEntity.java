@@ -30,6 +30,10 @@ public class PostEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentEntity> comments = new HashSet<>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
+
     public void setComments(Set<CommentEntity> comments) {
         this.comments.addAll(comments);
     }

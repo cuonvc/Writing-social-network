@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface IPostService {
 
-    PostDTO savePost(PostDTO postDTO);
+    PostDTO savePost(Integer userId, PostDTO postDTO);
     PostResponse getAll(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
     PostDTO getById(Integer id);
-    void deleteById(Integer id);
+    void deleteById(Integer userId, Integer id);
 }

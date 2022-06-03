@@ -1,21 +1,20 @@
 package com.springboot.restblog.controller;
 
+import com.springboot.restblog.exception.APIException;
+import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PostResponse;
 import com.springboot.restblog.service.IPostService;
-import com.springboot.restblog.service.impl.PostServiceImpl;
 import com.springboot.restblog.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/posts")
+@RequestMapping("/api/v1")
 public class PostController {
 
     //Spring recommends using the interface to maintain loose coupling between the dependencies
@@ -26,15 +25,16 @@ public class PostController {
         this.iPostService = iPostService;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping
-    public ResponseEntity<PostDTO> createPost(@Valid @RequestBody PostDTO postDTO) {
-        PostDTO postResponse = iPostService.savePost(postDTO);
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/user/{userId}/posts")
+    public ResponseEntity<PostDTO> createPost(/*@Valid*/ @PathVariable(name = "userId") Integer userId,
+                                                         @RequestBody PostDTO postDTO) {
+        PostDTO postResponse = iPostService.savePost(userId, postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @GetMapping
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @GetMapping("/posts")
     public PostResponse getAllPost(@RequestParam(value = "pageNo",
                                        defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
                                    @RequestParam(value = "pageSize",
@@ -47,7 +47,7 @@ public class PostController {
         return iPostService.getAll(pageNo, pageSize, sortBy, sortDir);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/posts/{id}")
     public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.ok(iPostService.getById(id));
     }
@@ -57,20 +57,22 @@ public class PostController {
     //- ResponseEntity.ok(x) - use this method to pass data in the method body with
     // only status code 200 (OK).
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/{id}")
-    public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "id") Integer id,
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/user/{userId}/posts/{id}")
+    public ResponseEntity<PostDTO> updatePost(/*@Valid*/ @PathVariable(name = "userId") Integer userId,
+                                                         @PathVariable(name = "id") Integer id,
                                               @RequestBody PostDTO postDTO) {
         postDTO.setId(id);
 
-        PostDTO postResponse = iPostService.savePost(postDTO);
+        PostDTO postResponse = iPostService.savePost(userId, postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(@PathVariable(name = "id") Integer id) {
-        iPostService.deleteById(id);
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/user/{userId}/posts/{id}")
+    public ResponseEntity<String> deletePost(@PathVariable(name = "userId") Integer userId,
+                                             @PathVariable(name = "id") Integer id) {
+        iPostService.deleteById(userId, id);
         return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
     }
 }

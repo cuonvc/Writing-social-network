@@ -2,6 +2,7 @@ package com.springboot.restblog.security;
 
 import com.springboot.restblog.model.entity.RoleEntity;
 import com.springboot.restblog.model.entity.UserEntity;
+import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         UserEntity user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email:" + usernameOrEmail));
 
-        return new User(user.getEmail(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
+        return new CustomUser(user.getEmail(), user.getPassword(), mapRolesToAuthorities(user.getRoles()), user.getId());
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<RoleEntity> roles) {

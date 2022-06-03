@@ -1,17 +1,23 @@
 package com.springboot.restblog.service.impl;
 
+import com.springboot.restblog.exception.APIException;
 import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.PostConverter;
 import com.springboot.restblog.model.entity.PostEntity;
+import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PostResponse;
 import com.springboot.restblog.repository.PostRepository;
+import com.springboot.restblog.repository.UserRepository;
 import com.springboot.restblog.service.IPostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +30,9 @@ public class PostServiceImpl implements IPostService {
     private PostRepository postRepository;
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private PostConverter converter;
 
     public PostServiceImpl(PostRepository postRepository, PostConverter converter) {
@@ -32,9 +41,16 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public PostDTO savePost(PostDTO postDTO) {
-
+    public PostDTO savePost(Integer userId, PostDTO postDTO) {
         PostEntity postEntity;
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        Integer id = customUser.getUserId();
+
+        if (!id.equals(userId)) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
+        }
 
         if (postDTO.getId() != null) {  //post is existed
             //update
@@ -42,10 +58,17 @@ public class PostServiceImpl implements IPostService {
                     .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDTO.getId()));
 
             postEntity = converter.toEntity(postDTO, oldPost);
+
+            if (!postEntity.getUser().getId().equals(userId)) {
+                throw new APIException(HttpStatus.BAD_REQUEST, "Post do not belong user");
+            }
         } else {
             //create
             postEntity = converter.toEntity(postDTO);
         }
+
+        postEntity.setUser(userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)));
 
         PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);
@@ -89,9 +112,13 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public void deleteById(Integer id) {
+    public void deleteById(Integer userId, Integer id) {
         PostEntity postResponse = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+
+        if (!postResponse.getUser().getId().equals(userId)) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Post do not belong user");
+        }
         postRepository.delete(postResponse);
     }
 }

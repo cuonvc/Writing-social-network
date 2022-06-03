@@ -37,4 +37,10 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<RoleEntity> roles;
+
+    @OneToMany(mappedBy = "user")
+    private Set<PostEntity> postEntities;
+
+    @OneToMany(mappedBy = "user")
+    private Set<CommentEntity> commentEntities;
 }
