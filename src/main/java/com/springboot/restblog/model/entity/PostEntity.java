@@ -34,6 +34,9 @@ public class PostEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @ManyToMany(mappedBy = "postEntities", cascade = CascadeType.REMOVE)
+    Set<CategoryEntity> categoryEntities;
+
     public void setComments(Set<CommentEntity> comments) {
         this.comments.addAll(comments);
     }
