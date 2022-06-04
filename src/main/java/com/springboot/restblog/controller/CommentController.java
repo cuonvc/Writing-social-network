@@ -13,7 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/post/{postId}/comments")
+@RequestMapping("/api/v1")
 public class CommentController {
 
     @Autowired
@@ -23,20 +23,22 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping()
-    public ResponseEntity<CommentDTO> createComment(@PathVariable(name = "postId") Integer idPost,
+    @PostMapping("/post/{postId}/user/{userId}/comments")
+    public ResponseEntity<CommentDTO> createComment(@PathVariable(name = "userId") Integer userId,
+                                                    @PathVariable(name = "postId") Integer idPost,
                                                     @Valid @RequestBody CommentDTO commentDTO) {
-        CommentDTO commentResponse = commentService.saveComment(idPost, commentDTO);
+        CommentDTO commentResponse = commentService.saveComment(userId, idPost, commentDTO);
 
         return new ResponseEntity<>(commentResponse, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CommentDTO> updateComment(@PathVariable(name = "id") Integer id,
+    @PutMapping("/post/{postId}/user/{userId}/comments/{id}")
+    public ResponseEntity<CommentDTO> updateComment(@PathVariable(name = "userId") Integer userId,
+                                                    @PathVariable(name = "id") Integer id,
                                                     @PathVariable(name = "postId") Integer idPost,
                                                     @Valid @RequestBody CommentDTO commentDTO) {
         commentDTO.setId(id);
-        CommentDTO commentUpdate = commentService.saveComment(idPost, commentDTO);
+        CommentDTO commentUpdate = commentService.saveComment(userId, idPost, commentDTO);
 
         return new ResponseEntity<>(commentUpdate, HttpStatus.OK);
     }
