@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/v1")
 public class PostController {
@@ -27,7 +29,7 @@ public class PostController {
 
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/user/{userId}/posts")
-    public ResponseEntity<PostDTO> createPost(/*@Valid*/ @PathVariable(name = "userId") Integer userId,
+    public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "userId") Integer userId,
                                                          @RequestBody PostDTO postDTO) {
         PostDTO postResponse = iPostService.savePost(userId, postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
@@ -59,7 +61,7 @@ public class PostController {
 
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/user/{userId}/posts/{id}")
-    public ResponseEntity<PostDTO> updatePost(/*@Valid*/ @PathVariable(name = "userId") Integer userId,
+    public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "userId") Integer userId,
                                                          @PathVariable(name = "id") Integer id,
                                               @RequestBody PostDTO postDTO) {
         postDTO.setId(id);
