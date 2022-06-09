@@ -3,10 +3,12 @@ package com.springboot.restblog.service.impl;
 import com.springboot.restblog.exception.APIException;
 import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.PostConverter;
+import com.springboot.restblog.model.entity.CategoryEntity;
 import com.springboot.restblog.model.entity.PostEntity;
 import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PostResponse;
+import com.springboot.restblog.repository.CategoryRepository;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.repository.UserRepository;
 import com.springboot.restblog.service.IPostService;
@@ -20,7 +22,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,6 +37,9 @@ public class PostServiceImpl implements IPostService {
     private UserRepository userRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
     private PostConverter converter;
 
     public PostServiceImpl(PostRepository postRepository, PostConverter converter) {
@@ -41,7 +48,7 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public PostDTO savePost(Integer userId, PostDTO postDTO) {
+    public PostDTO savePost(Integer userId, Integer[] categoryIds, PostDTO postDTO) {
         PostEntity postEntity;
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,6 +57,14 @@ public class PostServiceImpl implements IPostService {
 
         if (!id.equals(userId)) {
             throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
+        }
+
+        //check category list from controller and return new Set<CategoryEntity>
+        Set<CategoryEntity> categoryByIds = new HashSet<>();
+        for (Integer categoryId : categoryIds) {
+            CategoryEntity categoryById = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Category", "name", categoryId));
+            categoryByIds.add(categoryById);
         }
 
         if (postDTO.getId() != null) {  //post is existed
@@ -69,6 +84,8 @@ public class PostServiceImpl implements IPostService {
 
         postEntity.setUser(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)));
+        //issue here
+        postEntity.setCategoryEntities(categoryByIds);
 
         PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);

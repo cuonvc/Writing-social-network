@@ -14,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -28,10 +29,11 @@ public class PostController {
     }
 
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/user/{userId}/posts")
+    @PostMapping("/user/{userId}/posts/category/{categoryIds}")
     public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "userId") Integer userId,
+                                                         @PathVariable(name = "categoryIds") Integer[] categoryIds,
                                                          @RequestBody PostDTO postDTO) {
-        PostDTO postResponse = iPostService.savePost(userId, postDTO);
+        PostDTO postResponse = iPostService.savePost(userId, categoryIds, postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
 
@@ -60,15 +62,15 @@ public class PostController {
     // only status code 200 (OK).
 
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/user/{userId}/posts/{id}")
-    public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "userId") Integer userId,
-                                                         @PathVariable(name = "id") Integer id,
-                                              @RequestBody PostDTO postDTO) {
-        postDTO.setId(id);
-
-        PostDTO postResponse = iPostService.savePost(userId, postDTO);
-        return new ResponseEntity<>(postResponse, HttpStatus.OK);
-    }
+//    @PutMapping("/user/{userId}/posts/{id}")
+//    public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "userId") Integer userId,
+//                                                         @PathVariable(name = "id") Integer id,
+//                                              @RequestBody PostDTO postDTO) {
+//        postDTO.setId(id);
+//
+//        PostDTO postResponse = iPostService.savePost(userId, postDTO);
+//        return new ResponseEntity<>(postResponse, HttpStatus.OK);
+//    }
 
 //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/user/{userId}/posts/{id}")
