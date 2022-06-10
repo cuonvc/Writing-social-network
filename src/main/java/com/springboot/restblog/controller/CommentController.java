@@ -1,6 +1,5 @@
 package com.springboot.restblog.controller;
 
-import com.springboot.restblog.model.entity.CommentEntity;
 import com.springboot.restblog.model.payload.CommentDTO;
 import com.springboot.restblog.service.ICommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,21 +42,21 @@ public class CommentController {
         return new ResponseEntity<>(commentUpdate, HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/post/{postId}/comment/{id}")
     public ResponseEntity<CommentDTO> getCommentByid(@PathVariable(name = "id") Integer id,
                                                      @PathVariable(name = "postId") Integer idPost) {
         CommentDTO commentResponse = commentService.getById(id, idPost);
         return new ResponseEntity<>(commentResponse, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping("/post/{postId}/comments")
     public List<CommentDTO> listCommentsByPostId(@PathVariable(name = "postId") Integer idPost) {
         List<CommentDTO> listResponse = commentService.getCommentsByPostId(idPost);
         return listResponse;
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/post/{postId}/comment/{id}")
     public HttpStatus deleteCommentById(@PathVariable(name = "id") Integer id,
                                   @PathVariable(name = "postId") Integer idPost) {
         commentService.deleteById(id, idPost);

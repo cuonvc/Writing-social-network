@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,7 +47,6 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public CommentDTO saveComment(Integer userId, Integer idPost, CommentDTO commentDTO) {
-        CommentEntity commentEntity;
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser user = (CustomUser) authentication.getPrincipal();
@@ -60,6 +60,8 @@ public class CommentServiceImpl implements ICommentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
         UserEntity userById = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+
+        CommentEntity commentEntity;
 
         if (commentDTO.getId() == null) {
             //create
@@ -81,10 +83,7 @@ public class CommentServiceImpl implements ICommentService {
             if (!commentById.getUser().getId().equals(userById.getId())) {
                 throw new APIException(HttpStatus.BAD_REQUEST, "Comment do not belong this User");
             }
-
-
         }
-
         commentEntity.setUser(userById);
         commentEntity.setPost(postById);
 
@@ -94,7 +93,6 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     public CommentDTO getById(Integer id, Integer idPost) {
-
         CommentEntity commentById = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
 
@@ -110,9 +108,12 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public List<CommentDTO> getCommentsByPostId(Integer idPost) {
-        List<CommentEntity> entityList = commentRepository.findByPostId(idPost);
+        PostEntity postEntity = postRepository.findById(idPost)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
 
-        List<CommentDTO> commentList = entityList.stream().map(comment -> converter.toDTO(comment))
+        Set<CommentEntity> commentEntities = postEntity.getComments();
+
+        List<CommentDTO> commentList = commentEntities.stream().map(comment -> converter.toDTO(comment))
                 .collect(Collectors.toList());
 
         return commentList;
@@ -132,6 +133,4 @@ public class CommentServiceImpl implements ICommentService {
 
         commentRepository.delete(commentById);
     }
-
-
 }

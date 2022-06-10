@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface CommentRepository extends JpaRepository<CommentEntity, Integer> {
-    List<CommentEntity> findByPostId(Integer idPost);
+//    List<CommentEntity> findByPostId(Integer idPost);
 }
