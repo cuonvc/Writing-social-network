@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -21,11 +22,6 @@ public class CategoryEntity {
     @Column()
     private String name;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "post_category",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "post_id")
-    )
-    Set<PostEntity> postEntities;
+    @ManyToMany(mappedBy = "categoryEntities", cascade = CascadeType.ALL)
+    Set<PostEntity> postEntities = new HashSet<>();
 }

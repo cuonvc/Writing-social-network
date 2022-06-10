@@ -34,8 +34,13 @@ public class PostEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @ManyToMany(mappedBy = "postEntities")
-    Set<CategoryEntity> categoryEntities;
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "post_category",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    Set<CategoryEntity> categoryEntities = new HashSet<>();
 
     public void setComments(Set<CommentEntity> comments) {
         this.comments.addAll(comments);

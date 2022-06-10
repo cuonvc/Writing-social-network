@@ -49,7 +49,6 @@ public class PostServiceImpl implements IPostService {
 
     @Override
     public PostDTO savePost(Integer userId, Integer[] categoryIds, PostDTO postDTO) {
-        PostEntity postEntity;
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
@@ -59,33 +58,30 @@ public class PostServiceImpl implements IPostService {
             throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
         }
 
+        PostEntity postEntity = converter.toEntity(postDTO);
+
+        postEntity.setUser(userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)));
+
         //check category list from controller and return new Set<CategoryEntity>
         Set<CategoryEntity> categoryByIds = new HashSet<>();
         for (Integer categoryId : categoryIds) {
             CategoryEntity categoryById = categoryRepository.findById(categoryId)
                     .orElseThrow(() -> new ResourceNotFoundException("Category", "name", categoryId));
+            //set list category for a post
             categoryByIds.add(categoryById);
+            //call list post from a category
+            Set<PostEntity> postEntitiesByOneCategory = categoryById.getPostEntities();
+//
+//            //get Id before save entity to DB
+//            postDTO.setId(); //how to get id
+//            //set a post to list post of category
+            postEntitiesByOneCategory.add(converter.toEntity(postDTO)); //postId null??
         }
 
-        if (postDTO.getId() != null) {  //post is existed
-            //update
-            PostEntity oldPost = postRepository.findById(postDTO.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDTO.getId()));
-
-            postEntity = converter.toEntity(postDTO, oldPost);
-
-            if (!postEntity.getUser().getId().equals(userId)) {
-                throw new APIException(HttpStatus.BAD_REQUEST, "Post do not belong user");
-            }
-        } else {
-            //create
-            postEntity = converter.toEntity(postDTO);
-        }
-
+        postEntity.setCategoryEntities(categoryByIds);
         postEntity.setUser(userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)));
-        //issue here
-        postEntity.setCategoryEntities(categoryByIds);
 
         PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);
