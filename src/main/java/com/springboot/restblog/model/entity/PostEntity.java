@@ -42,7 +42,7 @@ public class PostEntity {
     )
     Set<CategoryEntity> categoryEntities = new HashSet<>();
 
-    public void setComments(Set<CommentEntity> comments) {
-        this.comments.addAll(comments);
-    }
+//    public void setComments(Set<CommentEntity> comments) {
+//        this.comments.addAll(comments);
+//    }
 }

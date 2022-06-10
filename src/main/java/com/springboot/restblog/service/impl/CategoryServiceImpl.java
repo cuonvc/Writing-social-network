@@ -32,11 +32,21 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     public CategoryDTO saveCategory(CategoryDTO categoryDTO) {
+
+        List<CategoryEntity> categoryEntities = categoryRepository.findAll();
+        for (CategoryEntity category : categoryEntities) {
+            if (category.getName().compareTo(categoryDTO.getName()) == 0) {
+                throw new APIException(HttpStatus.BAD_REQUEST, "Category already exists");
+            }
+        }
+
         CategoryEntity categoryEntity;
 
         if (categoryDTO.getId() == null) {
+            //create
             categoryEntity = converter.toEntity(categoryDTO);
         } else {
+            //update
             CategoryEntity oldCategory = categoryRepository.findById(categoryDTO.getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryDTO.getId()));
             categoryEntity = converter.toEntity(oldCategory, categoryDTO);
