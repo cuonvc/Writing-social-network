@@ -43,5 +43,5 @@ public class UserEntity {
     private Set<PostEntity> postEntities = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
-    private Set<CommentEntity> commentEntities;
+    private Set<CommentEntity> commentEntities = new HashSet<>();
 }

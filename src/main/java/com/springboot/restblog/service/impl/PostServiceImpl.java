@@ -5,6 +5,7 @@ import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.PostConverter;
 import com.springboot.restblog.model.entity.CategoryEntity;
 import com.springboot.restblog.model.entity.PostEntity;
+import com.springboot.restblog.model.entity.UserEntity;
 import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PostResponse;
@@ -72,16 +73,13 @@ public class PostServiceImpl implements IPostService {
             categoryByIds.add(categoryById);
             //call list post from a category
             Set<PostEntity> postEntitiesByOneCategory = categoryById.getPostEntities();
-//
-//            //get Id before save entity to DB
-//            postDTO.setId(); //how to get id
 //            //set a post to list post of category
-            postEntitiesByOneCategory.add(converter.toEntity(postDTO)); //postId null??
+            postEntitiesByOneCategory.add(postEntity);
+            //re-set post list for a category
+            categoryById.setPostEntities(postEntitiesByOneCategory);
         }
 
         postEntity.setCategoryEntities(categoryByIds);
-        postEntity.setUser(userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)));
 
         PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);
