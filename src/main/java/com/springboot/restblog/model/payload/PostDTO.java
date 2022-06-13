@@ -28,4 +28,6 @@ public class PostDTO {
     private String content;
 
     private Set<CommentDTO> comments;
+
+    private UserDTO user;
 }

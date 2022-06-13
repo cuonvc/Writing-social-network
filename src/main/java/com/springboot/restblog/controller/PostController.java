@@ -23,17 +23,13 @@ public class PostController {
 
     //Spring recommends using the interface to maintain loose coupling between the dependencies
     @Autowired
-    private IPostService iPostService;
+    private IPostService postService;
 
-    public PostController(IPostService iPostService) {
-        this.iPostService = iPostService;
-    }
+    @PostMapping("/category/{categoryIds}/post")
+    public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "categoryIds") Integer[] categoryIds,
+                                              @RequestBody PostDTO postDTO) {
 
-    @PostMapping("/user/{userId}/posts/category/{categoryIds}")
-    public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "userId") Integer userId,
-                                                         @PathVariable(name = "categoryIds") Integer[] categoryIds,
-                                                         @RequestBody PostDTO postDTO) {
-        PostDTO postResponse = iPostService.savePost(userId, categoryIds, postDTO);
+        PostDTO postResponse = postService.savePost(categoryIds, postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
 
@@ -47,12 +43,25 @@ public class PostController {
                                    @RequestParam(value = "sortDir",
                                        defaultValue = AppConstants.SORT_DIRECTION) String sortDir) {
 
-        return iPostService.getAll(pageNo, pageSize, sortBy, sortDir);
+        return postService.getAll(pageNo, pageSize, sortBy, sortDir);
     }
 
-    @GetMapping("/posts/{id}")
+    @GetMapping("/category/{categoryId}/posts")
+    public PostResponse getAllByCategory(@PathVariable(name = "categoryId") Integer categoryId,
+                                         @RequestParam(value = "pageNo",
+                                            defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
+                                         @RequestParam(value = "pageSize",
+                                            defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+                                         @RequestParam(value = "sortBy",
+                                            defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+                                         @RequestParam(value = "sortDir",
+                                            defaultValue = AppConstants.SORT_DIRECTION) String sortDir) {
+        return postService.getByCategory(categoryId, pageNo, pageSize, sortBy, sortDir);
+    }
+
+    @GetMapping("/post/{id}")
     public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") Integer id) {
-        return ResponseEntity.ok(iPostService.getById(id));
+        return ResponseEntity.ok(postService.getById(id));
     }
 
     //- ResponseEntity<>(x, HttpStatus.OK) - You can use this method to pass data in the
@@ -60,19 +69,18 @@ public class PostController {
     //- ResponseEntity.ok(x) - use this method to pass data in the method body with
     // only status code 200 (OK).
 
-    @PutMapping("/user/{userId}/posts/{id}")
-    public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "userId") Integer userId,
-                                                         @PathVariable(name = "id") Integer id,
+    @PutMapping("/post/{id}")
+    public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "id") Integer id,
                                               @RequestBody PostDTO postDTO) {
         postDTO.setId(id);
-        PostDTO postResponse = iPostService.editPost(userId, postDTO);
+        PostDTO postResponse = postService.editPost(postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/posts/{id}")
+    @DeleteMapping("/post/{id}")
     public ResponseEntity<String> deletePost(@PathVariable(name = "id") Integer id) {
-        iPostService.deleteById(id);
+        postService.deleteById(id);
         return new ResponseEntity<>("Post deleted successfully", HttpStatus.OK);
     }
 }

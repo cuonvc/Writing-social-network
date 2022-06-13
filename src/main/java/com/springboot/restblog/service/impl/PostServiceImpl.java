@@ -42,26 +42,17 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private PostConverter converter;
 
-    public PostServiceImpl(PostRepository postRepository, PostConverter converter) {
-        this.postRepository = postRepository;
-        this.converter = converter;
-    }
-
     @Override
-    public PostDTO savePost(Integer userId, Integer[] categoryIds, PostDTO postDTO) {
+    public PostDTO savePost(Integer[] categoryIds, PostDTO postDTO) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         Integer id = customUser.getUserId();
 
-        if (!id.equals(userId)) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
-        }
-
         PostEntity postEntity = converter.toEntity(postDTO);
 
-        postEntity.setUser(userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)));
+        postEntity.setUser(userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id)));
 
         //check category list from controller and return new Set<CategoryEntity>
         Set<CategoryEntity> categoryByIds = new HashSet<>();
@@ -85,19 +76,19 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public PostDTO editPost(Integer userId, PostDTO postDTO) {
+    public PostDTO editPost(PostDTO postDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser customUser = (CustomUser) authentication.getPrincipal();
-        Integer id = customUser.getUserId();
-
-        if (!id.equals(userId)) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
-        }
+        String emailClient = authentication.getName();
 
         PostEntity oldPost = postRepository.findById(postDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDTO.getId()));
-        PostEntity newPost = postRepository.save(converter.toEntity(postDTO, oldPost));
+        String emailOwner = oldPost.getUser().getEmail();
 
+        if (!emailClient.equals(emailOwner)) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
+        }
+
+        PostEntity newPost = postRepository.save(converter.toEntity(postDTO, oldPost));
         return converter.toDTO(newPost);
     }
 
@@ -109,22 +100,45 @@ public class PostServiceImpl implements IPostService {
                 : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortOj);
-
         Page<PostEntity> postEntities = postRepository.findAll(pageable);
 
-        List<PostEntity> postEntitiesList = postEntities.getContent();
+        PostResponse postResponse = pagingPost(postEntities);
 
-        List<PostDTO> contentList = postEntitiesList.stream()
-                .map(post -> converter.toDTO(post))
+        return postResponse;
+    }
+
+    @Override
+    public PostResponse getByCategory(Integer categoryId, Integer pageNo,
+                                      Integer pageSize, String sortBy, String sortDir) {
+        Sort sortOj = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortOj);
+        Page<PostEntity> postEntities = postRepository.findPostEntityByCategoryEntities(categoryEntity, pageable);
+
+        PostResponse postResponse = pagingPost(postEntities);
+
+        return postResponse;
+    }
+
+    private PostResponse pagingPost(Page<PostEntity> postEntities) {
+
+        List<PostEntity> postEntityList = postEntities.getContent();
+
+        List<PostDTO> contentList
+                = postEntityList.stream().map(post -> converter.toDTO(post))
                 .collect(Collectors.toList());
 
         PostResponse postResponse = new PostResponse();
-
-        postResponse.setContent(contentList);
         postResponse.setPageNo(postEntities.getNumber());
+        postResponse.setContent(contentList);
         postResponse.setPageSize(postEntities.getSize());
-        postResponse.setTotalElements((int) postEntities.getTotalElements());
         postResponse.setTotalPages(postEntities.getTotalPages());
+        postResponse.setTotalElements((int) postEntities.getTotalElements());
         postResponse.setLast(postEntities.isLast());
 
         return postResponse;

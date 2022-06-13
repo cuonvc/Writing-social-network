@@ -6,8 +6,9 @@ import java.util.List;
 
 public interface ICommentService {
 
-    CommentDTO saveComment(Integer userId, Integer idPost, CommentDTO commentDTO);
-    CommentDTO getById(Integer id, Integer idPost);
+    CommentDTO saveComment(Integer postId, CommentDTO commentDTO);
+    CommentDTO updateCommentById(CommentDTO commentDTO);
+    CommentDTO getById(Integer id);
     List<CommentDTO> getCommentsByPostId(Integer id);
-    void deleteById(Integer id, Integer idPost);
+    void deleteById(Integer id);
 }

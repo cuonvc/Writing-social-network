@@ -18,34 +18,26 @@ public class CommentController {
     @Autowired
     private ICommentService commentService;
 
-    public CommentController(ICommentService commentService) {
-        this.commentService = commentService;
-    }
-
-    @PostMapping("/post/{postId}/user/{userId}/comments")
-    public ResponseEntity<CommentDTO> createComment(@PathVariable(name = "userId") Integer userId,
-                                                    @PathVariable(name = "postId") Integer idPost,
+    @PostMapping("/post/{postId}/comment")
+    public ResponseEntity<CommentDTO> createComment(@PathVariable(name = "postId") Integer postId,
                                                     @Valid @RequestBody CommentDTO commentDTO) {
-        CommentDTO commentResponse = commentService.saveComment(userId, idPost, commentDTO);
+        CommentDTO commentResponse = commentService.saveComment(postId, commentDTO);
 
         return new ResponseEntity<>(commentResponse, HttpStatus.CREATED);
     }
 
-    @PutMapping("/post/{postId}/user/{userId}/comments/{id}")
-    public ResponseEntity<CommentDTO> updateComment(@PathVariable(name = "userId") Integer userId,
-                                                    @PathVariable(name = "id") Integer id,
-                                                    @PathVariable(name = "postId") Integer idPost,
+    @PutMapping("/comment/{id}")
+    public ResponseEntity<CommentDTO> updateComment(@PathVariable(name = "id") Integer id,
                                                     @Valid @RequestBody CommentDTO commentDTO) {
         commentDTO.setId(id);
-        CommentDTO commentUpdate = commentService.saveComment(userId, idPost, commentDTO);
+        CommentDTO commentUpdate = commentService.updateCommentById(commentDTO);
 
         return new ResponseEntity<>(commentUpdate, HttpStatus.OK);
     }
 
-    @GetMapping("/post/{postId}/comment/{id}")
-    public ResponseEntity<CommentDTO> getCommentByid(@PathVariable(name = "id") Integer id,
-                                                     @PathVariable(name = "postId") Integer idPost) {
-        CommentDTO commentResponse = commentService.getById(id, idPost);
+    @GetMapping("/comment/{id}")
+    public ResponseEntity<CommentDTO> getCommentByid(@PathVariable(name = "id") Integer id) {
+        CommentDTO commentResponse = commentService.getById(id);
         return new ResponseEntity<>(commentResponse, HttpStatus.OK);
     }
 
@@ -56,10 +48,9 @@ public class CommentController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/post/{postId}/comment/{id}")
-    public HttpStatus deleteCommentById(@PathVariable(name = "id") Integer id,
-                                  @PathVariable(name = "postId") Integer idPost) {
-        commentService.deleteById(id, idPost);
+    @DeleteMapping("/comment/{id}")
+    public HttpStatus deleteCommentById(@PathVariable(name = "id") Integer id) {
+        commentService.deleteById(id);
         return HttpStatus.OK;
     }
 }

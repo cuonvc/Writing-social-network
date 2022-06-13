@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -46,45 +47,26 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     @Override
-    public CommentDTO saveComment(Integer userId, Integer idPost, CommentDTO commentDTO) {
+    public CommentDTO saveComment(Integer postId, CommentDTO commentDTO) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser user = (CustomUser) authentication.getPrincipal();
-        Integer id = user.getUserId();
 
-        if (!id.equals(userId)) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this comment");
-        }
-
-        PostEntity postById = postRepository.findById(idPost)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
-        UserEntity userById = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        PostEntity postById = postRepository.findById(postId)
+                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
 
         CommentEntity commentEntity;
+        commentEntity = converter.toEntity(commentDTO);
 
-        if (commentDTO.getId() == null) {
-            //create
-            commentEntity = converter.toEntity(commentDTO);
-        } else {
-            //update
-            CommentEntity oldComment = commentRepository.findById(commentDTO.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentDTO.getId()));
+        String emailByUser = authentication.getName();
+        UserEntity userByEmail = userRepository.findByEmail(emailByUser).get();
 
-            commentEntity = converter.toEntity(oldComment, commentDTO);
-
-            CommentEntity commentById = commentRepository.findById(commentDTO.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentDTO.getId()));
-
-            if (!commentById.getPost().getId().equals(postById.getId())) {
-                throw new APIException(HttpStatus.BAD_REQUEST,"Comment do not belong this post");
-            }
-
-            if (!commentById.getUser().getId().equals(userById.getId())) {
-                throw new APIException(HttpStatus.BAD_REQUEST, "Comment do not belong this User");
-            }
-        }
-        commentEntity.setUser(userById);
+//        if (commentDTO.getId() == null) {
+//            //create
+//
+//        } else {
+//            //update
+//        }
+        commentEntity.setUser(userByEmail);
         commentEntity.setPost(postById);
 
         CommentEntity newComment = commentRepository.save(commentEntity);
@@ -92,16 +74,34 @@ public class CommentServiceImpl implements ICommentService {
         return converter.toDTO(newComment);
     }
 
-    public CommentDTO getById(Integer id, Integer idPost) {
+    @Override
+    public CommentDTO updateCommentById(CommentDTO commentDTO) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String emailClient = authentication.getName();
+
+        CommentEntity oldComment = commentRepository.findById(commentDTO.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentDTO.getId()));
+        String emailOwner = oldComment.getUser().getEmail();
+        PostEntity postByComment = oldComment.getPost();
+
+        if (!emailClient.equals(emailOwner)) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Comment does not belong to this user");
+        }
+
+        UserEntity userByEmail = userRepository.findByEmail(emailClient).get();
+
+        CommentEntity commentEntity = converter.toEntity(commentDTO);
+        commentEntity.setUser(userByEmail);
+        commentEntity.setPost(postByComment);
+
+        CommentEntity newComment = commentRepository.save(commentEntity);
+        return converter.toDTO(newComment);
+        //chưa test save and update comment và chỉnh sửa controller các method dưới
+    }
+
+    public CommentDTO getById(Integer id) {
         CommentEntity commentById = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
-
-        PostEntity postById = postRepository.findById(idPost)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
-
-        if (!commentById.getPost().getId().equals(postById.getId())) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
-        }
 
         return converter.toDTO(commentById);
     }
@@ -120,16 +120,9 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     @Override
-    public void deleteById(Integer id, Integer idPost) {
+    public void deleteById(Integer id) {
         CommentEntity commentById = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
-
-        PostEntity postById = postRepository.findById(idPost)
-                .orElseThrow(() -> new ResourceNotFoundException("Post", "id", idPost));
-
-        if (!commentById.getPost().getId().equals(postById.getId())) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "Comment does not belong to post");
-        }
 
         commentRepository.delete(commentById);
     }

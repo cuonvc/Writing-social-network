@@ -19,7 +19,7 @@ public class CategoryController {
     private ICategoryService categoryService;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/categories")
+    @PostMapping("/category")
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO categoryResponse = categoryService.saveCategory(categoryDTO);
 
@@ -27,7 +27,7 @@ public class CategoryController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PutMapping("/categories/{id}")
+    @PutMapping("/category/{id}")
     public ResponseEntity<CategoryDTO> updateCategory(@Valid @PathVariable(name = "id") Integer id,
                                                       @RequestBody CategoryDTO categoryDTO) {
         categoryDTO.setId(id);
@@ -42,14 +42,14 @@ public class CategoryController {
         return listResponse;
     }
 
-    @GetMapping("/categories/{id}")
+    @GetMapping("/category/{id}")
     public ResponseEntity<CategoryDTO> getById(@PathVariable(name = "id") Integer id) {
         CategoryDTO categoryResponse = categoryService.findById(id);
         return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/categories/{id}")
+    @DeleteMapping("/category/{id}")
     public ResponseEntity<String> deleteById(@PathVariable(name = "id") Integer id) {
         categoryService.deleteById(id);
         return new ResponseEntity<>("Delete successfully", HttpStatus.OK);
