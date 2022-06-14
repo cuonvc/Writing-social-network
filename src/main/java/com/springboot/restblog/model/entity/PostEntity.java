@@ -3,6 +3,7 @@ package com.springboot.restblog.model.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,12 @@ public class PostEntity {
 
     @Column(nullable = false)
     private String content;
+
+    @Column(name = "created_date")
+    private Date created_date;
+
+    @Column(name = "modified_date")
+    private Date modified_date;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentEntity> comments = new HashSet<>();

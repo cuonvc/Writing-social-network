@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,14 +61,9 @@ public class CommentServiceImpl implements ICommentService {
         String emailByUser = authentication.getName();
         UserEntity userByEmail = userRepository.findByEmail(emailByUser).get();
 
-//        if (commentDTO.getId() == null) {
-//            //create
-//
-//        } else {
-//            //update
-//        }
         commentEntity.setUser(userByEmail);
         commentEntity.setPost(postById);
+        commentEntity.setCreatedDate(new Date());
 
         CommentEntity newComment = commentRepository.save(commentEntity);
 
@@ -90,9 +86,11 @@ public class CommentServiceImpl implements ICommentService {
 
         UserEntity userByEmail = userRepository.findByEmail(emailClient).get();
 
-        CommentEntity commentEntity = converter.toEntity(commentDTO);
+        CommentEntity commentEntity = converter.toEntity(oldComment, commentDTO);
         commentEntity.setUser(userByEmail);
         commentEntity.setPost(postByComment);
+        commentEntity.setCreatedDate(oldComment.getCreatedDate());
+        commentEntity.setModifiedDate(new Date());
 
         CommentEntity newComment = commentRepository.save(commentEntity);
         return converter.toDTO(newComment);

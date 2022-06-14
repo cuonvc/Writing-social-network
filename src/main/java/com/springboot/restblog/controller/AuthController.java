@@ -2,6 +2,7 @@ package com.springboot.restblog.controller;
 
 import com.springboot.restblog.model.entity.RoleEntity;
 import com.springboot.restblog.model.entity.UserEntity;
+import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.JwtAuthResponse;
 import com.springboot.restblog.model.payload.LoginDTO;
 import com.springboot.restblog.model.payload.RegisterDTO;
@@ -23,7 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -73,6 +77,7 @@ public class AuthController {
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setDateRegistered(new Date());
 
         RoleEntity role = roleRepository.findByName("ROLE_USER").get();
         user.setRoles(Collections.singleton(role));
@@ -98,6 +103,7 @@ public class AuthController {
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        user.setDateRegistered(new Date());
 
         RoleEntity role = roleRepository.findByName("ROLE_ADMIN").get();
         user.setRoles(Collections.singleton(role));

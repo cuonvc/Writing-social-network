@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +34,9 @@ public class UserEntity {
     @Column
     private String password;
 
+    @Column(name = "date_registered")
+    private Date dateRegistered;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -44,4 +48,7 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user")
     private Set<CommentEntity> commentEntities = new HashSet<>();
+
+    @OneToOne(mappedBy = "user")
+    private UserProfileEntity userProfile;
 }

@@ -6,6 +6,7 @@ import lombok.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ public class PostDTO {
 
     @NotEmpty(message = "Content should not be null or empty")
     private String content;
+
+    private Date createdDate;
+    private Date modifiedDate;
 
     private Set<CommentDTO> comments;
 

@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,6 +72,7 @@ public class PostServiceImpl implements IPostService {
         }
 
         postEntity.setCategoryEntities(categoryByIds);
+        postEntity.setCreated_date(new Date());
 
         PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);
@@ -94,8 +96,10 @@ public class PostServiceImpl implements IPostService {
                 }
             }
         }
+        PostEntity postEntity = converter.toEntity(postDTO, oldPost);
+        postEntity.setModified_date(new Date());
 
-        PostEntity newPost = postRepository.save(converter.toEntity(postDTO, oldPost));
+        PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);
     }
 
