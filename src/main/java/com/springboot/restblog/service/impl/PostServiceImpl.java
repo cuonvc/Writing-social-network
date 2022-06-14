@@ -5,6 +5,7 @@ import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.PostConverter;
 import com.springboot.restblog.model.entity.CategoryEntity;
 import com.springboot.restblog.model.entity.PostEntity;
+import com.springboot.restblog.model.entity.RoleEntity;
 import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PostResponse;
@@ -79,13 +80,19 @@ public class PostServiceImpl implements IPostService {
     public PostDTO editPost(PostDTO postDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String emailClient = authentication.getName();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        Set<RoleEntity> roles = customUser.getRoles();
 
         PostEntity oldPost = postRepository.findById(postDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDTO.getId()));
         String emailOwner = oldPost.getUser().getEmail();
 
-        if (!emailClient.equals(emailOwner)) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
+        for (RoleEntity roleEntity : roles) {
+            if (!roleEntity.getName().equals("ROLE_ADMIN")) {
+                if (!emailClient.equals(emailOwner)) {
+                    throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
+                }
+            }
         }
 
         PostEntity newPost = postRepository.save(converter.toEntity(postDTO, oldPost));

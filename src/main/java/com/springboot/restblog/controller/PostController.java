@@ -69,6 +69,7 @@ public class PostController {
     //- ResponseEntity.ok(x) - use this method to pass data in the method body with
     // only status code 200 (OK).
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PutMapping("/post/{id}")
     public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "id") Integer id,
                                               @RequestBody PostDTO postDTO) {

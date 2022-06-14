@@ -33,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         UserEntity user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username or email:" + usernameOrEmail));
 
-        return new CustomUser(user.getEmail(), user.getPassword(), mapRolesToAuthorities(user.getRoles()), user.getId());
+        return new CustomUser(user.getEmail(), user.getPassword(), mapRolesToAuthorities(user.getRoles()), user.getId(), user.getRoles());
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<RoleEntity> roles) {
