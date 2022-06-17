@@ -1,6 +1,5 @@
 package com.springboot.restblog.model.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,8 +21,11 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
-    private String name;
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
 
     @Column
     private String username;
@@ -37,11 +39,11 @@ public class UserEntity {
     @Column(name = "date_registered")
     private Date dateRegistered;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    Set<RoleEntity> roles;
+    Set<RoleEntity> roles = new HashSet<>();
 
     @OneToMany(mappedBy = "user")
     private Set<PostEntity> postEntities = new HashSet<>();
@@ -51,4 +53,12 @@ public class UserEntity {
 
     @OneToOne(mappedBy = "user")
     private UserProfileEntity userProfile;
+
+//    @Override
+//    public String toString() {
+//        return "UserEntity{" +
+//                "firstName='" + firstName + '\'' +
+//                ", lastName='" + lastName + '\'' +
+//                '}';
+//    }
 }
