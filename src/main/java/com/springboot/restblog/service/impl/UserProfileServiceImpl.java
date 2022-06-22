@@ -40,18 +40,18 @@ public class UserProfileServiceImpl implements IUserProfileService {
     }
 
     @Override
-    public UserProfileDTO setInfoUser(Integer userId, UserProfileDTO userProfileDTO) {  //temporary logic
+    public UserProfileDTO setInfoUser(/*Integer userId, */UserProfileDTO userProfileDTO) {  //temporary logic
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         Integer id = customUser.getUserId();
+//
+//        if (!id.equals(userId)) {
+//            throw new APIException(HttpStatus.BAD_REQUEST, "This user isn't the owner!");
+//        }
 
-        if (!id.equals(userId)) {
-            throw new APIException(HttpStatus.BAD_REQUEST, "This user isn't the owner!");
-        }
-
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        UserEntity userEntity = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
         UserProfileEntity oldProfile = userProfileRepository.findUserProfileEntityByUser(userEntity).get();
 
         UserProfileEntity newProfile = userProfileRepository.save(converter.toEntity(oldProfile, userProfileDTO));

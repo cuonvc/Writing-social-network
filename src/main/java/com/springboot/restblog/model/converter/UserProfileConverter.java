@@ -25,8 +25,6 @@ public class UserProfileConverter {
         dto.setGender(entity.getGender());
         dto.setAbout(entity.getAbout());
         dto.setDateOfBirth(entity.getDateOfBirth());
-        dto.setAvatarPhoto(entity.getAvatarPhoto());
-        dto.setCoverPhoto(entity.getCoverPhoto());
 
         return dto;
     }
@@ -43,8 +41,6 @@ public class UserProfileConverter {
         entity.setGender(dto.getGender());
         entity.setDateOfBirth(dto.getDateOfBirth());
         entity.setAbout(dto.getAbout());
-        entity.setAvatarPhoto(dto.getAvatarPhoto());
-        entity.setCoverPhoto(dto.getCoverPhoto());
 
         return entity;
     }
