@@ -48,20 +48,41 @@ public class UserProfileController {
         Integer userId = customUser.getUserId();
 
         if (!multipartFile.isEmpty()) {
-            float fileSizeInMegabytes = multipartFile.getSize() / 1000000.0f;
-            if (fileSizeInMegabytes > 5.0f) {
-                throw new RuntimeException("File must be maximum 5 megabytes");
-            }
-
             String uploadDir = "user-avatars/" + userId;
-
-            FileUploadUtils.cleanDir(uploadDir);
-            FileUploadUtils.saveFile(uploadDir, multipartFile);
+            saveImage(multipartFile, uploadDir);
 
             return new ResponseEntity<>("Update avatar successfully", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Bằng một cách thần kì nào đó mà nó đã lỗi (có lẽ chưa chọn file)!",
                     HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/profile/coverPhoto")
+    public ResponseEntity<String> updateCoverPhoto(
+            @RequestPart ("image") @Valid @ValidImage MultipartFile multipartFile) throws IOException {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        Integer userId = customUser.getUserId();
+
+        if (!multipartFile.isEmpty()) {
+            String uploadDir = "user-covers/" + userId;
+            saveImage(multipartFile, uploadDir);
+
+            return new ResponseEntity<>("Update cover photo successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Update cover photo false!", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void saveImage(MultipartFile multipartFile, String dir) throws IOException {
+        float fileSizeMegabytes = multipartFile.getSize() / 1000000.0f;
+        if (fileSizeMegabytes > 5.0f) {
+            throw new RuntimeException("File must be maximum 5 megabytes");
+        }
+
+        FileUploadUtils.cleanDir(dir);
+        FileUploadUtils.saveFile(dir, multipartFile);
     }
 }
