@@ -1,5 +1,6 @@
 package com.springboot.restblog.controller;
 
+import com.springboot.restblog.anotation.ValidImage;
 import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.UserProfileDTO;
 import com.springboot.restblog.service.IUserProfileService;
@@ -9,14 +10,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1")
+@Validated
 public class UserProfileController {
 
     @Autowired
@@ -38,13 +41,18 @@ public class UserProfileController {
 
     @PostMapping("/profile/avatar")
     public ResponseEntity<String> updateAvatar(
-            @RequestParam(name = "image") MultipartFile multipartFile) throws IOException {
+            @RequestPart ("image") @Valid @ValidImage MultipartFile multipartFile) throws IOException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         Integer userId = customUser.getUserId();
 
         if (!multipartFile.isEmpty()) {
+            float fileSizeInMegabytes = multipartFile.getSize() / 1000000.0f;
+            if (fileSizeInMegabytes > 5.0f) {
+                throw new RuntimeException("File must be maximum 5 megabytes");
+            }
+
             String uploadDir = "user-avatars/" + userId;
 
             FileUploadUtils.cleanDir(uploadDir);

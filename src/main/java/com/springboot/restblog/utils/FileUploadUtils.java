@@ -21,9 +21,9 @@ public class FileUploadUtils {
             Files.createDirectories(uploadPath);
         }
         //check image file
-        if (!isImageFile(multipartFile)) {
-            throw new RuntimeException("You can only upload image file");
-        }
+//        if (!isImageFile(multipartFile)) {
+//            throw new RuntimeException("You can only upload image file");
+//        }
         //check file size
         float fileSizeInMegabytes = multipartFile.getSize() / 1000000.0f;
         if (fileSizeInMegabytes > 5.0f) {
