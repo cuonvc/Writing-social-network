@@ -20,15 +20,6 @@ public class FileUploadUtils {
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
-        //check image file
-//        if (!isImageFile(multipartFile)) {
-//            throw new RuntimeException("You can only upload image file");
-//        }
-        //check file size
-        float fileSizeInMegabytes = multipartFile.getSize() / 1000000.0f;
-        if (fileSizeInMegabytes > 5.0f) {
-            throw new RuntimeException("File must be maximum 5 megabytes");
-        }
         //rename file
         String fileExtention = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
         String generatedFileName = UUID.randomUUID().toString().replace("-", "");
@@ -41,12 +32,6 @@ public class FileUploadUtils {
         } catch (IOException exception) {
             throw new IOException("Could not save file: " + generatedFileName, exception);
         }
-    }
-
-    private static boolean isImageFile(MultipartFile multipartFile) {
-        String fileExtention = FilenameUtils.getExtension(multipartFile.getOriginalFilename());
-        return Arrays.asList(new String[] {"png", "jpg", "jpeg", "bmp", "gif", "pdf"})
-                .contains(fileExtention.trim().toLowerCase());
     }
 
     public static void cleanDir(String dir) {
