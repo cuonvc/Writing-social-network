@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class FileUploadUtils {
-    public static void saveFile(String uploadDir,
+    public static String saveFile(String uploadDir,
                          MultipartFile multipartFile) throws IOException {
         Path uploadPath = Paths.get(uploadDir);
         //create if file path is not exists
@@ -29,6 +29,8 @@ public class FileUploadUtils {
         try (InputStream inputStream = multipartFile.getInputStream()) {
             Path filePath = uploadPath.resolve(generatedFileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return generatedFileName;
         } catch (IOException exception) {
             throw new IOException("Could not save file: " + generatedFileName, exception);
         }

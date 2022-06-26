@@ -25,6 +25,8 @@ public class UserProfileConverter {
         dto.setGender(entity.getGender());
         dto.setAbout(entity.getAbout());
         dto.setDateOfBirth(entity.getDateOfBirth());
+        dto.setAvatarPhoto(entity.getAvatarPhoto());
+        dto.setCoverPhoto(entity.getCoverPhoto());
 
         return dto;
     }

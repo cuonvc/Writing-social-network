@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,49 +41,25 @@ public class UserProfileController {
     }
 
     @PostMapping("/profile/avatar")
-    public ResponseEntity<String> updateAvatar(
+    public ResponseEntity<UserProfileDTO> updateAvatar(
             @RequestPart ("image") @Valid @ValidImage MultipartFile multipartFile) throws IOException {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser customUser = (CustomUser) authentication.getPrincipal();
-        Integer userId = customUser.getUserId();
-
-        if (!multipartFile.isEmpty()) {
-            String uploadDir = "user-avatars/" + userId;
-            saveImage(multipartFile, uploadDir);
-
-            return new ResponseEntity<>("Update avatar successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Bằng một cách thần kì nào đó mà nó đã lỗi (có lẽ chưa chọn file)!",
-                    HttpStatus.BAD_REQUEST);
-        }
+        UserProfileDTO profileResponse = userProfileService.setAvatarImg(multipartFile);
+        return new ResponseEntity<>(profileResponse, HttpStatus.OK);
     }
+
+//    @GetMapping("/profile/avatar/{imageName.} + png")
+//    public ResponseEntity<String> getAvatarImage() {
+//
+//    }
 
     @PostMapping("/profile/coverPhoto")
-    public ResponseEntity<String> updateCoverPhoto(
+    public ResponseEntity<UserProfileDTO> updateCoverPhoto(
             @RequestPart ("image") @Valid @ValidImage MultipartFile multipartFile) throws IOException {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUser customUser = (CustomUser) authentication.getPrincipal();
-        Integer userId = customUser.getUserId();
-
-        if (!multipartFile.isEmpty()) {
-            String uploadDir = "user-covers/" + userId;
-            saveImage(multipartFile, uploadDir);
-
-            return new ResponseEntity<>("Update cover photo successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Update cover photo false!", HttpStatus.BAD_REQUEST);
-        }
+        UserProfileDTO profileResponse = userProfileService.setCoverImg(multipartFile);
+        return new ResponseEntity<>(profileResponse, HttpStatus.OK);
     }
 
-    private void saveImage(MultipartFile multipartFile, String dir) throws IOException {
-        float fileSizeMegabytes = multipartFile.getSize() / 1000000.0f;
-        if (fileSizeMegabytes > 5.0f) {
-            throw new RuntimeException("File must be maximum 5 megabytes");
-        }
 
-        FileUploadUtils.cleanDir(dir);
-        FileUploadUtils.saveFile(dir, multipartFile);
-    }
 }

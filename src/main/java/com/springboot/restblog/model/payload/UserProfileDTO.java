@@ -22,7 +22,7 @@ public class UserProfileDTO {
     private String gender;
     private Date dateOfBirth;
     private String avatarPhoto;
-//    private String coverPhoto;
+    private String coverPhoto;
 
     @NotEmpty
     @Size(min = 10, max = 100, message = "About must minium 10 characters and maximum 100 characters")
