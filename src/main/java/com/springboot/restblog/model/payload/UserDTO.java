@@ -14,13 +14,13 @@ public class UserDTO {
 
     private Integer id;
 
-    @NotEmpty
-    @Size(min = 2, max = 10, message = "First name must be minium 2 characters and maximum 10 characters")
-    private String firstName;
-
-    @Size(min = 2, max = 10, message = "Last name must be minium 2 characters and maximum 10 characters")
-    @NotEmpty
-    private String lastName;
+//    @NotEmpty
+//    @Size(min = 2, max = 10, message = "First name must be minium 2 characters and maximum 10 characters")
+//    private String firstName;
+//
+//    @Size(min = 2, max = 10, message = "Last name must be minium 2 characters and maximum 10 characters")
+//    @NotEmpty
+//    private String lastName;
 
     @NotEmpty
     @Email(message = "Email invalidate!")

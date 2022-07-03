@@ -14,14 +14,14 @@ public class UserProfileConverter {
 
     public UserProfileDTO toDto(UserProfileEntity entity) {
 
-        String fullName = entity.getFullName();
-        String[] array = fullName.split(" ");
+//        String fullName = entity.getFullName();
+//        String[] array = fullName.split(" ");
 
         UserProfileDTO dto = new UserProfileDTO();
         dto.setId(entity.getId());
-        dto.setFirstName(array[0]);
-        dto.setLastName(array[1]);
-        dto.setFullName(entity.getFullName());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setFullName(entity.getFirstName() + " " + entity.getLastName());
         dto.setGender(entity.getGender());
         dto.setAbout(entity.getAbout());
         dto.setDateOfBirth(entity.getDateOfBirth());
@@ -39,7 +39,9 @@ public class UserProfileConverter {
 
     public UserProfileEntity toEntity(UserProfileEntity entity, UserProfileDTO dto) {
         //custom
-        entity.setFullName(dto.getFirstName() + " " + dto.getLastName());
+//        entity.setFullName(dto.getFirstName() + " " + dto.getLastName());
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
         entity.setGender(dto.getGender());
         entity.setDateOfBirth(dto.getDateOfBirth());
         entity.setAbout(dto.getAbout());

@@ -70,8 +70,8 @@ public class AuthServiceImpl implements IAuthService {
 
         UserEntity user = new UserEntity();
 
-        user.setFirstName(registerDTO.getFirstName());
-        user.setLastName(registerDTO.getLastName());
+//        user.setFirstName(registerDTO.getFirstName());
+//        user.setLastName(registerDTO.getLastName());
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
@@ -79,7 +79,8 @@ public class AuthServiceImpl implements IAuthService {
 
         UserProfileEntity userProfile = new UserProfileEntity();
         userProfile.setUser(user);
-        userProfile.setFullName(registerDTO.getFirstName() + " " + registerDTO.getLastName());
+        userProfile.setFirstName(registerDTO.getFirstName());
+        userProfile.setLastName(registerDTO.getLastName());
 
         userProfileRepository.save(userProfile);
 
