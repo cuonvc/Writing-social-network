@@ -68,6 +68,7 @@ public class PostConverter {
 
         //repalce (Convert by modelMapper lib)
         PostDTO dto = mapper.map(entity, PostDTO.class);
+        dto.setThumbnails(entity.getThumbnails());
 
         return dto;
     }

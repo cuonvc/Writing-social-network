@@ -10,9 +10,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
 @Getter
 @Setter
+@Data
 public class PostDTO {
 
     private Integer id;
@@ -27,6 +27,8 @@ public class PostDTO {
 
     @NotEmpty(message = "Content should not be null or empty")
     private String content;
+
+    private String thumbnails;
 
     private Date createdDate;
     private Date modifiedDate;

@@ -13,6 +13,7 @@ import com.springboot.restblog.repository.CategoryRepository;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.repository.UserRepository;
 import com.springboot.restblog.service.IPostService;
+import com.springboot.restblog.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,7 +23,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +48,7 @@ public class PostServiceImpl implements IPostService {
     private PostConverter converter;
 
     @Override
-    public PostDTO savePost(Integer[] categoryIds, PostDTO postDTO) {
+    public PostDTO savePost(Integer[] categoryIds, PostDTO postDTO, MultipartFile file) throws IOException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
@@ -73,6 +76,15 @@ public class PostServiceImpl implements IPostService {
 
         postEntity.setCategoryEntities(categoryByIds);
         postEntity.setCreated_date(new Date());
+        if (!file.isEmpty()) {
+            String uploadDir = "post_thumbnails/";
+            String fileName = saveToFolder(file, uploadDir);
+            postEntity.setThumbnails(fileName);
+        } else {
+            if (postEntity.getThumbnails() == null) {
+                postEntity.setThumbnails(null);
+            }
+        }
 
         PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);
@@ -169,5 +181,17 @@ public class PostServiceImpl implements IPostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
 
         postRepository.delete(postResponse);
+    }
+
+    private String saveToFolder(MultipartFile multipartFile, String dir) throws IOException {
+        float fileSizeMegabytes = multipartFile.getSize() / 1000000.0f;
+        if (fileSizeMegabytes > 5.0f) {
+            throw new RuntimeException("File must be maximum 5 megabytes");
+        }
+
+//        FileUploadUtils.cleanDir(dir);
+        String fileName = FileUploadUtils.saveFile(dir, multipartFile);
+
+        return fileName;
     }
 }

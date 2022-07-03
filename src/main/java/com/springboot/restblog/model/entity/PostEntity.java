@@ -9,6 +9,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -27,6 +28,9 @@ public class PostEntity {
 
     @Column(nullable = false)
     private String content;
+
+    @Column
+    private String thumbnails;
 
     @Column(name = "created_date")
     private Date created_date;

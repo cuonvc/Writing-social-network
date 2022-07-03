@@ -1,5 +1,6 @@
 package com.springboot.restblog.controller;
 
+import com.springboot.restblog.anotation.ValidImage;
 import com.springboot.restblog.exception.APIException;
 import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
@@ -13,8 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,9 +30,10 @@ public class PostController {
 
     @PostMapping("/category/{categoryIds}/post")
     public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "categoryIds") Integer[] categoryIds,
-                                              @RequestBody PostDTO postDTO) {
+                                              @RequestPart ("textField") PostDTO postDTO,
+                                              @RequestPart ("image") @ValidImage MultipartFile file) throws IOException {
 
-        PostDTO postResponse = postService.savePost(categoryIds, postDTO);
+        PostDTO postResponse = postService.savePost(categoryIds, postDTO, file);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
 
