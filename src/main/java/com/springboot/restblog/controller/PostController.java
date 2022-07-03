@@ -76,9 +76,10 @@ public class PostController {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PutMapping("/post/{id}")
     public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "id") Integer id,
-                                              @RequestBody PostDTO postDTO) {
+                                              @RequestPart ("textField") PostDTO postDTO,
+                                              @RequestPart ("image") @ValidImage MultipartFile file) throws IOException {
         postDTO.setId(id);
-        PostDTO postResponse = postService.editPost(postDTO);
+        PostDTO postResponse = postService.editPost(postDTO, file);
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 

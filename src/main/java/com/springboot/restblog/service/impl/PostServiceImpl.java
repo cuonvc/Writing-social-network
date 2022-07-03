@@ -76,22 +76,15 @@ public class PostServiceImpl implements IPostService {
 
         postEntity.setCategoryEntities(categoryByIds);
         postEntity.setCreated_date(new Date());
-        if (!file.isEmpty()) {
-            String uploadDir = "post_thumbnails/";
-            String fileName = saveToFolder(file, uploadDir);
-            postEntity.setThumbnails(fileName);
-        } else {
-            if (postEntity.getThumbnails() == null) {
-                postEntity.setThumbnails(null);
-            }
-        }
 
+        PostEntity savedPost = postRepository.save(postEntity);
+        saveOrUpdateImage(file, savedPost);
         PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);
     }
 
     @Override
-    public PostDTO editPost(PostDTO postDTO) {
+    public PostDTO editPost(PostDTO postDTO, MultipartFile file) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String emailClient = authentication.getName();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
@@ -110,6 +103,7 @@ public class PostServiceImpl implements IPostService {
         }
         PostEntity postEntity = converter.toEntity(postDTO, oldPost);
         postEntity.setModified_date(new Date());
+        saveOrUpdateImage(file, oldPost);
 
         PostEntity newPost = postRepository.save(postEntity);
         return converter.toDTO(newPost);
@@ -183,15 +177,20 @@ public class PostServiceImpl implements IPostService {
         postRepository.delete(postResponse);
     }
 
-    private String saveToFolder(MultipartFile multipartFile, String dir) throws IOException {
-        float fileSizeMegabytes = multipartFile.getSize() / 1000000.0f;
-        if (fileSizeMegabytes > 5.0f) {
-            throw new RuntimeException("File must be maximum 5 megabytes");
+    private void saveOrUpdateImage(MultipartFile file, PostEntity savedPost) throws IOException {
+        if (!file.isEmpty()) {
+            String uploadDir = "post_thumbnails/" + savedPost.getId();
+            float fileSizeMegabytes = file.getSize() / 1000000.0f;
+            if (fileSizeMegabytes > 5.0f) {
+                throw new RuntimeException("File must be maximum 5 megabytes");
+            }
+            FileUploadUtils.cleanDir(uploadDir);
+            String fileName = FileUploadUtils.saveFile(uploadDir, file);
+            savedPost.setThumbnails(fileName);
+        } else {
+            if (savedPost.getThumbnails() == null) {
+                savedPost.setThumbnails(null);
+            }
         }
-
-//        FileUploadUtils.cleanDir(dir);
-        String fileName = FileUploadUtils.saveFile(dir, multipartFile);
-
-        return fileName;
     }
 }

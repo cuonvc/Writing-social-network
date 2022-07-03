@@ -10,7 +10,7 @@ import java.util.List;
 public interface IPostService {
 
     PostDTO savePost(Integer[] categoryIds, PostDTO postDTO, MultipartFile file) throws IOException;
-    PostDTO editPost(PostDTO postDTO);
+    PostDTO editPost(PostDTO postDTO, MultipartFile file) throws IOException;
     PostResponse getAll(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
     PostResponse getByCategory(Integer categoryId, Integer pageNo, Integer pageSize, String sortBy, String sortDir);
     PostDTO getById(Integer id);
