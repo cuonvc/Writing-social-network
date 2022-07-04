@@ -29,6 +29,7 @@ public class PostController {
     private IPostService postService;
 
     @PostMapping("/category/{categoryIds}/post")
+    //mix json and file trong formData
     public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "categoryIds") Integer[] categoryIds,
                                               @RequestPart ("textField") PostDTO postDTO,
                                               @RequestPart ("image") @ValidImage MultipartFile file) throws IOException {
@@ -36,6 +37,13 @@ public class PostController {
         PostDTO postResponse = postService.savePost(categoryIds, postDTO, file);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
     }
+//có thể sử dụng thuần formData (set thumbnails có dataType là MultipartFile)
+//    public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "categoryIds") Integer[] categoryIds,
+//                                              @ModelAttribute PostDTO postDTO) throws IOException {
+//
+//        PostDTO postResponse = postService.savePost(categoryIds, postDTO);
+//        return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
+//    }
 
     @GetMapping("/posts")
     public PostResponse getAllPost(@RequestParam(value = "pageNo",
