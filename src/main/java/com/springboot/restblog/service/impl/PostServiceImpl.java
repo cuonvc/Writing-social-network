@@ -24,12 +24,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,9 +77,9 @@ public class PostServiceImpl implements IPostService {
         postEntity.setCreated_date(new Date());
 
         PostEntity savedPost = postRepository.save(postEntity);
-        saveOrUpdateImage(file, savedPost);
-        PostEntity newPost = postRepository.save(postEntity);
-        return converter.toDTO(newPost);
+        PostDTO responseDto = saveOrUpdateImage(file, postEntity, savedPost);
+
+        return responseDto;
     }
 
     @Override
@@ -103,10 +102,9 @@ public class PostServiceImpl implements IPostService {
         }
         PostEntity postEntity = converter.toEntity(postDTO, oldPost);
         postEntity.setModified_date(new Date());
-        saveOrUpdateImage(file, oldPost);
+        PostDTO responseDto = saveOrUpdateImage(file, postEntity, oldPost);
 
-        PostEntity newPost = postRepository.save(postEntity);
-        return converter.toDTO(newPost);
+        return responseDto;
     }
 
     @Override
@@ -143,12 +141,14 @@ public class PostServiceImpl implements IPostService {
     }
 
     private PostResponse pagingPost(Page<PostEntity> postEntities) {
-
         List<PostEntity> postEntityList = postEntities.getContent();
 
-        List<PostDTO> contentList
-                = postEntityList.stream().map(post -> converter.toDTO(post))
-                .collect(Collectors.toList());
+        List<PostDTO> contentList = new ArrayList<>();
+        for (PostEntity postEntity : postEntityList) {
+            PostDTO postDTO = converter.toDTO(postEntity);
+            setUrlImage(postDTO, postEntity);
+            contentList.add(postDTO);
+        }
 
         PostResponse postResponse = new PostResponse();
         postResponse.setPageNo(postEntities.getNumber());
@@ -166,7 +166,9 @@ public class PostServiceImpl implements IPostService {
         PostEntity postEntity = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
 
-        return converter.toDTO(postEntity);
+        PostDTO responseDto = converter.toDTO(postEntity);
+        setUrlImage(responseDto, postEntity);
+        return responseDto;
     }
 
     @Override
@@ -177,20 +179,33 @@ public class PostServiceImpl implements IPostService {
         postRepository.delete(postResponse);
     }
 
-    private void saveOrUpdateImage(MultipartFile file, PostEntity savedPost) throws IOException {
+    private PostDTO saveOrUpdateImage(MultipartFile file,PostEntity entity, PostEntity savedPost) throws IOException {
         if (!file.isEmpty()) {
-            String uploadDir = "post_thumbnails/" + savedPost.getId();
+            String uploadDir = "uploaded-images/post_thumbnails/" + savedPost.getId();
             float fileSizeMegabytes = file.getSize() / 1000000.0f;
             if (fileSizeMegabytes > 5.0f) {
                 throw new RuntimeException("File must be maximum 5 megabytes");
             }
             FileUploadUtils.cleanDir(uploadDir);
-            String fileName = FileUploadUtils.saveFile(uploadDir, file);
-            savedPost.setThumbnails(fileName);
+            Path path = FileUploadUtils.saveFile(uploadDir, file);
+            savedPost.setThumbnails(path.toString().replace("\\", "/"));
         } else {
             if (savedPost.getThumbnails() == null) {
                 savedPost.setThumbnails(null);
             }
         }
+
+        PostEntity newPost = postRepository.save(entity);
+        PostDTO responseDto = converter.toDTO(newPost);
+
+        setUrlImage(responseDto, newPost);
+        return responseDto;
+    }
+
+    private void setUrlImage(PostDTO responseDto, PostEntity savedPost) {
+        String urlImage = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + savedPost.getThumbnails())
+                .toUriString();
+        responseDto.setThumbnails(urlImage);
     }
 }
