@@ -44,14 +44,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
         UserProfileEntity userProfile = userProfileRepository.findUserProfileEntityByUser(userEntity).get();
 
         UserProfileDTO profileResponse = converter.toDto(userProfile);
-        String urlAvartar = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("files/" + userProfile.getAvatarPhoto())
-                .toUriString();
-        String urlCover = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("files/" + userProfile.getCoverPhoto())
-                .toUriString();
-        profileResponse.setAvatarPhoto(urlAvartar);
-        profileResponse.setCoverPhoto(urlCover);
+        setUrlAvartarAndCover(userProfile, profileResponse);
 
         return profileResponse;
     }
@@ -68,8 +61,10 @@ public class UserProfileServiceImpl implements IUserProfileService {
         UserProfileEntity oldProfile = userProfileRepository.findUserProfileEntityByUser(userEntity).get();
 
         UserProfileEntity newProfile = userProfileRepository.save(converter.toEntity(oldProfile, userProfileDTO));
+        UserProfileDTO responseDto = converter.toDto(newProfile);
+        setUrlAvartarAndCover(newProfile, responseDto);
 
-        return converter.toDto(newProfile);
+        return responseDto;
     }
 
     @Override
@@ -140,5 +135,16 @@ public class UserProfileServiceImpl implements IUserProfileService {
         Path filePath = FileUploadUtils.saveFile(dir, multipartFile);
 
         return filePath;
+    }
+
+    private void setUrlAvartarAndCover(UserProfileEntity savedProfile, UserProfileDTO response) {
+        String urlAvartar = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + savedProfile.getAvatarPhoto())
+                .toUriString();
+        String urlCover = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + savedProfile.getCoverPhoto())
+                .toUriString();
+        response.setAvatarPhoto(urlAvartar);
+        response.setCoverPhoto(urlCover);
     }
 }
