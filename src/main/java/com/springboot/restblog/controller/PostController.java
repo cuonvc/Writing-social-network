@@ -1,24 +1,19 @@
 package com.springboot.restblog.controller;
 
 import com.springboot.restblog.anotation.ValidImage;
-import com.springboot.restblog.exception.APIException;
-import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
-import com.springboot.restblog.model.payload.PostResponse;
+import com.springboot.restblog.model.payload.PageResponse;
 import com.springboot.restblog.service.IPostService;
 import com.springboot.restblog.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -46,7 +41,7 @@ public class PostController {
 //    }
 
     @GetMapping("/posts")
-    public PostResponse getAllPost(@RequestParam(value = "pageNo",
+    public PageResponse getAllPost(@RequestParam(value = "pageNo",
                                        defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
                                    @RequestParam(value = "pageSize",
                                        defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
@@ -59,7 +54,7 @@ public class PostController {
     }
 
     @GetMapping("/category/{categoryId}/posts")
-    public PostResponse getAllByCategory(@PathVariable(name = "categoryId") Integer categoryId,
+    public PageResponse getAllByCategory(@PathVariable(name = "categoryId") Integer categoryId,
                                          @RequestParam(value = "pageNo",
                                             defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
                                          @RequestParam(value = "pageSize",
