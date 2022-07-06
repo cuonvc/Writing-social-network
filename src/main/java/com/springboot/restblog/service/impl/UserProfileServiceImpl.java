@@ -18,8 +18,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 @Service
 public class UserProfileServiceImpl implements IUserProfileService {
@@ -41,7 +43,17 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
         UserProfileEntity userProfile = userProfileRepository.findUserProfileEntityByUser(userEntity).get();
 
-        return converter.toDto(userProfile);
+        UserProfileDTO profileResponse = converter.toDto(userProfile);
+        String urlAvartar = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + userProfile.getAvatarPhoto())
+                .toUriString();
+        String urlCover = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + userProfile.getCoverPhoto())
+                .toUriString();
+        profileResponse.setAvatarPhoto(urlAvartar);
+        profileResponse.setCoverPhoto(urlCover);
+
+        return profileResponse;
     }
 
     @Override
@@ -61,7 +73,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
     }
 
     @Override
-    public UserProfileDTO setAvatarImg(MultipartFile file) throws IOException {
+    public String setAvatarImg(MultipartFile file) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         Integer userId = customUser.getUserId();
@@ -70,10 +82,11 @@ public class UserProfileServiceImpl implements IUserProfileService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
         if (!file.isEmpty()) {
-            String uploadDir = "user-avatars/" + userId;
-            String fileName = saveToFolder(file, uploadDir);
+            String uploadDir = "uploaded-images/user-avatars/" + profileEntity.getId();
+            Path path = saveToFolder(file, uploadDir);  //dau bi nguoc
 
-            profileEntity.setAvatarPhoto(fileName);
+            //replace "\" to "/"
+            profileEntity.setAvatarPhoto(path.toString().replace("\\", "/"));  //convert lại cho xuôi
         } else {
             if (profileEntity.getAvatarPhoto().isEmpty()) {
                 profileEntity.setAvatarPhoto(null);
@@ -81,11 +94,15 @@ public class UserProfileServiceImpl implements IUserProfileService {
         }
 
         UserProfileEntity newProfile = userProfileRepository.save(profileEntity);
-        return converter.toDto(newProfile);
+
+        String urlAvartar = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + newProfile.getAvatarPhoto())
+                .toUriString();
+        return urlAvartar;
     }
 
     @Override
-    public UserProfileDTO setCoverImg(MultipartFile file) throws IOException {
+    public String setCoverImg(MultipartFile file) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         Integer userId = customUser.getUserId();
@@ -94,10 +111,11 @@ public class UserProfileServiceImpl implements IUserProfileService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
         if (!file.isEmpty()) {
-            String uploadDir = "user-covers/" + userId;
-            String fileName = saveToFolder(file, uploadDir);
+            String uploadDir = "uploaded-images/user-covers/" + userId;
+            Path path = saveToFolder(file, uploadDir);  //dau bi nguoc
 
-            profileEntity.setCoverPhoto(fileName);
+            //replace "\" to "/"
+            profileEntity.setCoverPhoto(path.toString().replace("\\", "/"));  //convert lại cho xuôi
         } else {
             if (profileEntity.getCoverPhoto().isEmpty()) {
                 profileEntity.setCoverPhoto(null);
@@ -105,18 +123,22 @@ public class UserProfileServiceImpl implements IUserProfileService {
         }
 
         UserProfileEntity newProfile = userProfileRepository.save(profileEntity);
-        return converter.toDto(newProfile);
+
+        String urlCover = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + newProfile.getCoverPhoto())
+                .toUriString();
+        return urlCover;
     }
 
-    private String saveToFolder(MultipartFile multipartFile, String dir) throws IOException {
+    private Path saveToFolder(MultipartFile multipartFile, String dir) throws IOException {
         float fileSizeMegabytes = multipartFile.getSize() / 1000000.0f;
         if (fileSizeMegabytes > 5.0f) {
             throw new RuntimeException("File must be maximum 5 megabytes");
         }
 
         FileUploadUtils.cleanDir(dir);
-        String fileName = FileUploadUtils.saveFile(dir, multipartFile);
+        Path filePath = FileUploadUtils.saveFile(dir, multipartFile);
 
-        return fileName;
+        return filePath;
     }
 }

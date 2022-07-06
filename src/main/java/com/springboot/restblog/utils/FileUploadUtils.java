@@ -14,7 +14,10 @@ import java.util.Arrays;
 import java.util.UUID;
 
 public class FileUploadUtils {
-    public static String saveFile(String uploadDir,
+
+    public Path storageFolder;
+
+    public static Path saveFile(String uploadDir,
                          MultipartFile multipartFile) throws IOException {
         Path uploadPath = Paths.get(uploadDir);
         //create if file path is not exists
@@ -31,7 +34,7 @@ public class FileUploadUtils {
             Path filePath = uploadPath.resolve(generatedFileName);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            return generatedFileName;
+            return filePath;
         } catch (IOException exception) {
             throw new IOException("Could not save file: " + generatedFileName, exception);
         }
@@ -50,5 +53,13 @@ public class FileUploadUtils {
         } catch (IOException exception) {
             System.out.println("Could not list directory: " + dirPath);
         }
+    }
+
+    public Path getStorageFolder() {
+        return storageFolder;
+    }
+
+    public void setStorageFolder(Path storageFolder) {
+        this.storageFolder = storageFolder;
     }
 }

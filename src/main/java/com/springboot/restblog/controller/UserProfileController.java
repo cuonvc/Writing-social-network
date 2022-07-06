@@ -41,25 +41,18 @@ public class UserProfileController {
     }
 
     @PostMapping("/profile/avatar")
-    public ResponseEntity<UserProfileDTO> updateAvatar(
+    public ResponseEntity<String> updateAvatar(
             @RequestPart ("image") @Valid @ValidImage MultipartFile multipartFile) throws IOException {
 
-        UserProfileDTO profileResponse = userProfileService.setAvatarImg(multipartFile);
-        return new ResponseEntity<>(profileResponse, HttpStatus.OK);
+        String urlAvartarPhoto = userProfileService.setAvatarImg(multipartFile);
+        return new ResponseEntity<>(urlAvartarPhoto, HttpStatus.OK);
     }
-
-//    @GetMapping("/profile/avatar/{imageName.} + png")
-//    public ResponseEntity<String> getAvatarImage() {
-//
-//    }
 
     @PostMapping("/profile/coverPhoto")
-    public ResponseEntity<UserProfileDTO> updateCoverPhoto(
+    public ResponseEntity<String> updateCoverPhoto(
             @RequestPart ("image") @Valid @ValidImage MultipartFile multipartFile) throws IOException {
 
-        UserProfileDTO profileResponse = userProfileService.setCoverImg(multipartFile);
-        return new ResponseEntity<>(profileResponse, HttpStatus.OK);
+        String urlCoverPhoto = userProfileService.setCoverImg(multipartFile);
+        return new ResponseEntity<>(urlCoverPhoto, HttpStatus.OK);
     }
-
-
 }

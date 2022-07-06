@@ -73,6 +73,7 @@ public class SecurityConfig {
                 .authorizeRequests((authorize)
                         -> authorize.antMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
                         .antMatchers("/api/v1/auth/**").permitAll()
+                        .antMatchers("/files/**").permitAll()
                         .anyRequest()
                         .authenticated());
 
