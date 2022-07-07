@@ -3,15 +3,18 @@ package com.springboot.restblog.service.impl;
 import com.springboot.restblog.exception.APIException;
 import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.UserProfileConverter;
+import com.springboot.restblog.model.entity.PostEntity;
+import com.springboot.restblog.model.entity.RoleEntity;
 import com.springboot.restblog.model.entity.UserEntity;
 import com.springboot.restblog.model.entity.UserProfileEntity;
-import com.springboot.restblog.model.payload.CustomUser;
-import com.springboot.restblog.model.payload.UserProfileDTO;
+import com.springboot.restblog.model.payload.*;
+import com.springboot.restblog.repository.RoleRepository;
 import com.springboot.restblog.repository.UserProfileRepository;
 import com.springboot.restblog.repository.UserRepository;
 import com.springboot.restblog.service.IUserProfileService;
 import com.springboot.restblog.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,6 +25,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserProfileServiceImpl implements IUserProfileService {
@@ -31,6 +37,9 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private UserProfileConverter converter;
@@ -47,6 +56,29 @@ public class UserProfileServiceImpl implements IUserProfileService {
         setUrlAvartarAndCover(userProfile, profileResponse);
 
         return profileResponse;
+    }
+
+    @Override
+    public PageResponseProfile getAllByRole(Integer role_id, Integer pageNo,
+                                     Integer pageSize, String sortBy, String sortDir) {
+        RoleEntity roleEntity = roleRepository.findById(role_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Role", "name", role_id));
+        List<UserEntity> userEntityList = userRepository.findUserEntitiesByRoles(roleEntity);
+
+        List<UserProfileEntity> profileEntityList
+                = userEntityList.stream()
+                .map(UserEntity::getUserProfile).collect(Collectors.toList());
+
+        Sort sortOj = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortOj);
+
+        Page<UserProfileEntity> page =
+                new PageImpl<>(profileEntityList, pageable, profileEntityList.size());
+        PageResponseProfile pageResponse = pagingProfile(page, profileEntityList);
+
+        return pageResponse;
     }
 
     @Override
@@ -146,5 +178,25 @@ public class UserProfileServiceImpl implements IUserProfileService {
                 .toUriString();
         response.setAvatarPhoto(urlAvartar);
         response.setCoverPhoto(urlCover);
+    }
+
+    private PageResponseProfile pagingProfile(Page<UserProfileEntity> profileEntities,
+                                              List<UserProfileEntity> profileEntityList) {
+        List<UserProfileDTO> contentList = new ArrayList<>();
+        for (UserProfileEntity profileEntity : profileEntityList) {
+            UserProfileDTO profileDTO = converter.toDto(profileEntity);
+            setUrlAvartarAndCover(profileEntity, profileDTO);
+            contentList.add(profileDTO);
+        }
+
+        PageResponseProfile pageResponse = new PageResponseProfile();
+        pageResponse.setPageNo(profileEntities.getNumber());
+        pageResponse.setContent(contentList);
+        pageResponse.setPageSize(profileEntities.getSize());
+        pageResponse.setTotalPages(profileEntities.getTotalPages());
+        pageResponse.setTotalElements((int) profileEntities.getTotalElements());
+        pageResponse.setLast(profileEntities.isLast());
+
+        return pageResponse;
     }
 }

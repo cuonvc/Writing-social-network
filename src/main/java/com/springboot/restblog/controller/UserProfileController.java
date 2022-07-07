@@ -2,8 +2,11 @@ package com.springboot.restblog.controller;
 
 import com.springboot.restblog.anotation.ValidImage;
 import com.springboot.restblog.model.payload.CustomUser;
+import com.springboot.restblog.model.payload.PageResponse;
+import com.springboot.restblog.model.payload.PageResponseProfile;
 import com.springboot.restblog.model.payload.UserProfileDTO;
 import com.springboot.restblog.service.IUserProfileService;
+import com.springboot.restblog.utils.AppConstants;
 import com.springboot.restblog.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -38,6 +42,19 @@ public class UserProfileController {
         UserProfileDTO profileResponse = userProfileService.getProfileByUser(userId);
 
         return new ResponseEntity<>(profileResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/profiles/role/{role_id}")
+    public PageResponseProfile getAllProfileByRole(@PathVariable Integer role_id,
+                                                   @RequestParam(value = "pageNo", required = false,
+                                                            defaultValue = AppConstants.PAGE_NUMBER) Integer pageNo,
+                                                   @RequestParam(value = "pageSize", required = false,
+                                                            defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+                                                   @RequestParam(value = "sortBy", required = false,
+                                                            defaultValue = AppConstants.SORT_BY) String sortBy,
+                                                   @RequestParam(value = "sortDir", required = false,
+                                                            defaultValue = AppConstants.SORT_DIRECTION) String dir) {
+        return userProfileService.getAllByRole(role_id, pageNo, pageSize, sortBy, dir);
     }
 
     @PostMapping("/profile/avatar")
