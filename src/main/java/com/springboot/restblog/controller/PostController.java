@@ -2,7 +2,7 @@ package com.springboot.restblog.controller;
 
 import com.springboot.restblog.anotation.ValidImage;
 import com.springboot.restblog.model.payload.PostDTO;
-import com.springboot.restblog.model.payload.PageResponse;
+import com.springboot.restblog.model.payload.PageResponsePost;
 import com.springboot.restblog.service.IPostService;
 import com.springboot.restblog.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,27 +41,27 @@ public class PostController {
 //    }
 
     @GetMapping("/posts")
-    public PageResponse getAllPost(@RequestParam(value = "pageNo",
+    public PageResponsePost getAllPost(@RequestParam(value = "pageNo",
                                        defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
-                                   @RequestParam(value = "pageSize",
+                                       @RequestParam(value = "pageSize",
                                        defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
-                                   @RequestParam(value = "sortBy",
+                                       @RequestParam(value = "sortBy",
                                        defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
-                                   @RequestParam(value = "sortDir",
+                                       @RequestParam(value = "sortDir",
                                        defaultValue = AppConstants.SORT_DIRECTION) String sortDir) {
 
         return postService.getAll(pageNo, pageSize, sortBy, sortDir);
     }
 
     @GetMapping("/category/{categoryId}/posts")
-    public PageResponse getAllByCategory(@PathVariable(name = "categoryId") Integer categoryId,
-                                         @RequestParam(value = "pageNo",
+    public PageResponsePost getAllByCategory(@PathVariable(name = "categoryId") Integer categoryId,
+                                             @RequestParam(value = "pageNo",
                                             defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
-                                         @RequestParam(value = "pageSize",
+                                             @RequestParam(value = "pageSize",
                                             defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
-                                         @RequestParam(value = "sortBy",
+                                             @RequestParam(value = "sortBy",
                                             defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
-                                         @RequestParam(value = "sortDir",
+                                             @RequestParam(value = "sortDir",
                                             defaultValue = AppConstants.SORT_DIRECTION) String sortDir) {
         return postService.getByCategory(categoryId, pageNo, pageSize, sortBy, sortDir);
     }

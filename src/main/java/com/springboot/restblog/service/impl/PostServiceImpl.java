@@ -8,7 +8,7 @@ import com.springboot.restblog.model.entity.PostEntity;
 import com.springboot.restblog.model.entity.RoleEntity;
 import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
-import com.springboot.restblog.model.payload.PageResponse;
+import com.springboot.restblog.model.payload.PageResponsePost;
 import com.springboot.restblog.repository.CategoryRepository;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.repository.UserRepository;
@@ -107,7 +107,7 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
-    public PageResponse getAll(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+    public PageResponsePost getAll(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
 
         Sort sortOj = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
@@ -116,14 +116,14 @@ public class PostServiceImpl implements IPostService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortOj);
         Page<PostEntity> postEntities = postRepository.findAll(pageable);
 
-        PageResponse pageResponse = pagingPost(postEntities);
+        PageResponsePost pageResponsePost = pagingPost(postEntities);
 
-        return pageResponse;
+        return pageResponsePost;
     }
 
     @Override
-    public PageResponse getByCategory(Integer categoryId, Integer pageNo,
-                                      Integer pageSize, String sortBy, String sortDir) {
+    public PageResponsePost getByCategory(Integer categoryId, Integer pageNo,
+                                          Integer pageSize, String sortBy, String sortDir) {
         Sort sortOj = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -134,12 +134,12 @@ public class PostServiceImpl implements IPostService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortOj);
         Page<PostEntity> postEntities = postRepository.findPostEntityByCategoryEntities(categoryEntity, pageable);
 
-        PageResponse pageResponse = pagingPost(postEntities);
+        PageResponsePost pageResponsePost = pagingPost(postEntities);
 
-        return pageResponse;
+        return pageResponsePost;
     }
 
-    private PageResponse pagingPost(Page<PostEntity> postEntities) {
+    private PageResponsePost pagingPost(Page<PostEntity> postEntities) {
         List<PostEntity> postEntityList = postEntities.getContent();
 
         List<PostDTO> contentList = new ArrayList<>();
@@ -149,15 +149,15 @@ public class PostServiceImpl implements IPostService {
             contentList.add(postDTO);
         }
 
-        PageResponse pageResponse = new PageResponse();
-        pageResponse.setPageNo(postEntities.getNumber());
-        pageResponse.setContent(contentList);
-        pageResponse.setPageSize(postEntities.getSize());
-        pageResponse.setTotalPages(postEntities.getTotalPages());
-        pageResponse.setTotalElements((int) postEntities.getTotalElements());
-        pageResponse.setLast(postEntities.isLast());
+        PageResponsePost pageResponsePost = new PageResponsePost();
+        pageResponsePost.setPageNo(postEntities.getNumber());
+        pageResponsePost.setContent(contentList);
+        pageResponsePost.setPageSize(postEntities.getSize());
+        pageResponsePost.setTotalPages(postEntities.getTotalPages());
+        pageResponsePost.setTotalElements((int) postEntities.getTotalElements());
+        pageResponsePost.setLast(postEntities.isLast());
 
-        return pageResponse;
+        return pageResponsePost;
     }
 
     @Override

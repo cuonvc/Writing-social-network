@@ -1,12 +1,10 @@
 package com.springboot.restblog.service;
 
-import com.springboot.restblog.model.payload.PageResponse;
 import com.springboot.restblog.model.payload.PageResponseProfile;
 import com.springboot.restblog.model.payload.UserProfileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface IUserProfileService {
     UserProfileDTO getProfileByUser(Integer userId);

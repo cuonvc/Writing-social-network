@@ -1,26 +1,19 @@
 package com.springboot.restblog.controller;
 
 import com.springboot.restblog.anotation.ValidImage;
-import com.springboot.restblog.model.payload.CustomUser;
-import com.springboot.restblog.model.payload.PageResponse;
 import com.springboot.restblog.model.payload.PageResponseProfile;
 import com.springboot.restblog.model.payload.UserProfileDTO;
 import com.springboot.restblog.service.IUserProfileService;
 import com.springboot.restblog.utils.AppConstants;
-import com.springboot.restblog.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
