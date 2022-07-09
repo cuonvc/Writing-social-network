@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -48,6 +49,12 @@ public class UserProfileController {
                                                    @RequestParam(value = "sortDir", required = false,
                                                             defaultValue = AppConstants.SORT_DIRECTION) String dir) {
         return userProfileService.getAllByRole(role_id, pageNo, pageSize, sortBy, dir);
+    }
+
+    @GetMapping("/profiles/search")
+    public ResponseEntity<List<UserProfileDTO>> searchProfileByKeyword(@RequestParam("keyword") String keyword) {
+        List<UserProfileDTO> profileList = userProfileService.filterByKeyword(keyword);
+        return new ResponseEntity<>(profileList, HttpStatus.OK);
     }
 
     @PostMapping("/profile/avatar")

@@ -26,6 +26,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,6 +81,43 @@ public class UserProfileServiceImpl implements IUserProfileService {
         PageResponseProfile pageResponse = pagingProfile(page, profileEntityList);
 
         return pageResponse;
+    }
+
+    @Override
+    public List<UserProfileDTO> filterByKeyword(String keyword) {
+        String newStr = keyword.trim()
+                .replaceAll("[ ]+", " "); //multiple spaces to single space
+        String[] firstOrLastName = newStr.split(" ");
+        List<UserProfileDTO> listResponse = new ArrayList<>();
+
+        for (String key : firstOrLastName) {
+            List<UserProfileEntity> profileList = userProfileRepository.searchProfiles(key);
+
+            for (UserProfileEntity profileEntity : profileList) {
+                UserProfileDTO profileDTO = converter.toDto(profileEntity);
+                if (listResponse.isEmpty()) {
+                    setUrlAvartarAndCover(profileEntity, profileDTO);
+                    listResponse.add(profileDTO);
+                } else {
+                    //error (ConcurrentModificationException) when using forEach
+                    int count = 0;
+                    for (int i = 0; i < listResponse.size(); i++) {
+                        if (!profileDTO.getId().equals(listResponse.get(i).getId())) {
+                            count++;
+                        }
+                    }
+                    for (int i = 0; i < listResponse.size(); i++) {
+                        if (count == listResponse.size()
+                                && !profileDTO.getId().equals(listResponse.get(i).getId())) {
+                            setUrlAvartarAndCover(profileEntity, profileDTO);
+                            listResponse.add(profileDTO);
+                        }
+                    }
+                }
+            }
+        }
+
+        return listResponse;
     }
 
     @Override
