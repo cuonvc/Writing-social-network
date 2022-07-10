@@ -52,9 +52,17 @@ public class UserProfileController {
     }
 
     @GetMapping("/profiles/search")
-    public ResponseEntity<List<UserProfileDTO>> searchProfileByKeyword(@RequestParam("keyword") String keyword) {
-        List<UserProfileDTO> profileList = userProfileService.filterByKeyword(keyword);
-        return new ResponseEntity<>(profileList, HttpStatus.OK);
+    public PageResponseProfile searchProfileByKeyword(@RequestParam("keyword") String keyword,
+                                                      @RequestParam(value = "pageNo", required = false,
+                                                              defaultValue = AppConstants.PAGE_NUMBER) Integer pageNo,
+                                                      @RequestParam(value = "pageSize", required = false,
+                                                              defaultValue = AppConstants.PAGE_SIZE) Integer pageSize,
+                                                      @RequestParam(value = "sortBy", required = false,
+                                                              defaultValue = AppConstants.SORT_BY) String sortBy,
+                                                      @RequestParam(value = "sortDir", required = false,
+                                                              defaultValue = AppConstants.SORT_DIRECTION) String dir) {
+        PageResponseProfile profileList = userProfileService.filterByKeyword(keyword, pageNo, pageSize, sortBy, dir);
+        return profileList;
     }
 
     @PostMapping("/profile/avatar")

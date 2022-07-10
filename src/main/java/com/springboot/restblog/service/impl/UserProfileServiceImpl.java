@@ -84,40 +84,45 @@ public class UserProfileServiceImpl implements IUserProfileService {
     }
 
     @Override
-    public List<UserProfileDTO> filterByKeyword(String keyword) {
+    public PageResponseProfile filterByKeyword(String keyword, Integer pageNo, Integer pageSize,
+                                               String sortBy, String sortDir) {
         String newStr = keyword.trim()
                 .replaceAll("[ ]+", " "); //multiple spaces to single space
         String[] firstOrLastName = newStr.split(" ");
-        List<UserProfileDTO> listResponse = new ArrayList<>();
+        List<UserProfileEntity> listResponseEntity = new ArrayList<>();
 
         for (String key : firstOrLastName) {
             List<UserProfileEntity> profileList = userProfileRepository.searchProfiles(key);
 
             for (UserProfileEntity profileEntity : profileList) {
-                UserProfileDTO profileDTO = converter.toDto(profileEntity);
-                if (listResponse.isEmpty()) {
-                    setUrlAvartarAndCover(profileEntity, profileDTO);
-                    listResponse.add(profileDTO);
+                if (listResponseEntity.isEmpty()) {
+                    listResponseEntity.add(profileEntity);
                 } else {
                     //error (ConcurrentModificationException) when using forEach
                     int count = 0;
-                    for (int i = 0; i < listResponse.size(); i++) {
-                        if (!profileDTO.getId().equals(listResponse.get(i).getId())) {
+                    for (int i = 0; i < listResponseEntity.size(); i++) {
+                        if (!profileEntity.getId().equals(listResponseEntity.get(i).getId())) {
                             count++;
                         }
                     }
-                    for (int i = 0; i < listResponse.size(); i++) {
-                        if (count == listResponse.size()
-                                && !profileDTO.getId().equals(listResponse.get(i).getId())) {
-                            setUrlAvartarAndCover(profileEntity, profileDTO);
-                            listResponse.add(profileDTO);
+                    for (int i = 0; i < listResponseEntity.size(); i++) {
+                        if (count == listResponseEntity.size()
+                                && !profileEntity.getId().equals(listResponseEntity.get(i).getId())) {
+                            listResponseEntity.add(profileEntity);
                         }
                     }
                 }
             }
         }
 
-        return listResponse;
+        Sort sortObj = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortObj);
+        Page<UserProfileEntity> page =
+                new PageImpl<>(listResponseEntity, pageable, listResponseEntity.size());
+        PageResponseProfile pageResponse = pagingProfile(page, listResponseEntity);
+        return pageResponse;
     }
 
     @Override
