@@ -66,6 +66,19 @@ public class PostController {
         return postService.getByCategory(categoryId, pageNo, pageSize, sortBy, sortDir);
     }
 
+    @GetMapping("/posts/search")
+    public PageResponsePost seachPostsByKeyword(@RequestParam(value = "keyword") String keyword,
+                                                @RequestParam(value = "pageNo",
+                                                defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNo,
+                                                @RequestParam(value = "pageSize",
+                                                defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+                                                @RequestParam(value = "sortBy",
+                                                defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+                                                @RequestParam(value = "sortDir",
+                                                defaultValue = AppConstants.SORT_DIRECTION, required = false) String sortDir) {
+        return postService.filterByKeyword(keyword, pageNo, pageSize, sortBy, sortDir);
+    }
+
     @GetMapping("/post/{id}")
     public ResponseEntity<PostDTO> getPostById(@PathVariable(name = "id") Integer id) {
         return ResponseEntity.ok(postService.getById(id));

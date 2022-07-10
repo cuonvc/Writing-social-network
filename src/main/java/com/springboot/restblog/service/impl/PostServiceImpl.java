@@ -6,7 +6,9 @@ import com.springboot.restblog.model.converter.PostConverter;
 import com.springboot.restblog.model.entity.CategoryEntity;
 import com.springboot.restblog.model.entity.PostEntity;
 import com.springboot.restblog.model.entity.RoleEntity;
+import com.springboot.restblog.model.entity.UserProfileEntity;
 import com.springboot.restblog.model.payload.CustomUser;
+import com.springboot.restblog.model.payload.PageResponseProfile;
 import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PageResponsePost;
 import com.springboot.restblog.repository.CategoryRepository;
@@ -15,10 +17,7 @@ import com.springboot.restblog.repository.UserRepository;
 import com.springboot.restblog.service.IPostService;
 import com.springboot.restblog.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -137,6 +136,47 @@ public class PostServiceImpl implements IPostService {
         PageResponsePost pageResponsePost = pagingPost(postEntities);
 
         return pageResponsePost;
+    }
+
+    @Override
+    public PageResponsePost filterByKeyword(String keyword, Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
+        String newStr = keyword.trim()
+                .replaceAll("[ ]+", " "); //multiple spaces to single space
+        String[] words = newStr.split(" ");
+        List<PostEntity> listResponseEntity = new ArrayList<>();
+
+        for (String key : words) {
+            List<PostEntity> postEntityList = postRepository.searchPosts(key);
+
+            for (PostEntity postEntity : postEntityList) {
+                if (listResponseEntity.isEmpty()) {
+                    listResponseEntity.add(postEntity);
+                } else {
+                    //error (ConcurrentModificationException) when using forEach
+                    int count = 0;
+                    for (int i = 0; i < listResponseEntity.size(); i++) {
+                        if (!postEntity.getId().equals(listResponseEntity.get(i).getId())) {
+                            count++;
+                        }
+                    }
+                    for (int i = 0; i < listResponseEntity.size(); i++) {
+                        if (count == listResponseEntity.size()
+                                && !postEntity.getId().equals(listResponseEntity.get(i).getId())) {
+                            listResponseEntity.add(postEntity);
+                        }
+                    }
+                }
+            }
+        }
+
+        Sort sortObj = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sortObj);
+        Page<PostEntity> page =
+                new PageImpl<>(listResponseEntity, pageable, listResponseEntity.size());
+        PageResponsePost pageResponse = pagingPost(page);
+        return pageResponse;
     }
 
     private PageResponsePost pagingPost(Page<PostEntity> postEntities) {

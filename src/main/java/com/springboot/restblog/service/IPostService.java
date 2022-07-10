@@ -12,6 +12,7 @@ public interface IPostService {
     PostDTO editPost(PostDTO postDTO, MultipartFile file) throws IOException;
     PageResponsePost getAll(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
     PageResponsePost getByCategory(Integer categoryId, Integer pageNo, Integer pageSize, String sortBy, String sortDir);
+    PageResponsePost filterByKeyword(String keyword, Integer pageNo, Integer pageSize, String sortBy, String sortDir);
     PostDTO getById(Integer id);
     void deleteById(Integer id);
 }
