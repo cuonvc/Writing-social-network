@@ -78,7 +78,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
         Page<UserProfileEntity> page =
                 new PageImpl<>(profileEntityList, pageable, profileEntityList.size());
-        PageResponseProfile pageResponse = pagingProfile(page, profileEntityList);
+        PageResponseProfile pageResponse = pagingProfile(page);
 
         return pageResponse;
     }
@@ -121,7 +121,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortObj);
         Page<UserProfileEntity> page =
                 new PageImpl<>(listResponseEntity, pageable, listResponseEntity.size());
-        PageResponseProfile pageResponse = pagingProfile(page, listResponseEntity);
+        PageResponseProfile pageResponse = pagingProfile(page);
         return pageResponse;
     }
 
@@ -224,8 +224,9 @@ public class UserProfileServiceImpl implements IUserProfileService {
         response.setCoverPhoto(urlCover);
     }
 
-    private PageResponseProfile pagingProfile(Page<UserProfileEntity> profileEntities,
-                                              List<UserProfileEntity> profileEntityList) {
+    private PageResponseProfile pagingProfile(Page<UserProfileEntity> profileEntities) {
+        List<UserProfileEntity> profileEntityList = profileEntities.getContent();
+
         List<UserProfileDTO> contentList = new ArrayList<>();
         for (UserProfileEntity profileEntity : profileEntityList) {
             UserProfileDTO profileDTO = converter.toDto(profileEntity);
