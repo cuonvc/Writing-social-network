@@ -33,7 +33,9 @@ public class PostDTO {
     private Date createdDate;
     private Date modifiedDate;
 
-    private Set<CommentDTO> comments;
+    private Set<CategoryDTO> categories = new HashSet<>();
 
-    private UserDTO user;
+    private Set<CommentDTO> comments = new HashSet<>();
+
+    private UserProfileDTO userProfile;
 }

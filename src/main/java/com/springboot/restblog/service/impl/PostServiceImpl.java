@@ -3,12 +3,8 @@ package com.springboot.restblog.service.impl;
 import com.springboot.restblog.exception.APIException;
 import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.PostConverter;
-import com.springboot.restblog.model.entity.CategoryEntity;
-import com.springboot.restblog.model.entity.PostEntity;
-import com.springboot.restblog.model.entity.RoleEntity;
-import com.springboot.restblog.model.entity.UserProfileEntity;
+import com.springboot.restblog.model.entity.*;
 import com.springboot.restblog.model.payload.CustomUser;
-import com.springboot.restblog.model.payload.PageResponseProfile;
 import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PageResponsePost;
 import com.springboot.restblog.repository.CategoryRepository;
@@ -53,8 +49,10 @@ public class PostServiceImpl implements IPostService {
 
         PostEntity postEntity = converter.toEntity(postDTO);
 
-        postEntity.setUser(userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id)));
+        UserEntity userById = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+
+        postEntity.setUserProfile(userById.getUserProfile());
 
         //check category list from controller and return new Set<CategoryEntity>
         Set<CategoryEntity> categoryByIds = new HashSet<>();
@@ -64,15 +62,16 @@ public class PostServiceImpl implements IPostService {
             //set list category for a post
             categoryByIds.add(categoryById);
             //call list post from a category
-            Set<PostEntity> postEntitiesByOneCategory = categoryById.getPostEntities();
+            Set<PostEntity> postEntitiesByOneCategory = categoryById.getPosts();
             //set a post to list post of category
             postEntitiesByOneCategory.add(postEntity);
             //re-set post list for a category
-            categoryById.setPostEntities(postEntitiesByOneCategory);
+            categoryById.setPosts(postEntitiesByOneCategory);
         }
 
-        postEntity.setCategoryEntities(categoryByIds);
-        postEntity.setCreated_date(new Date());
+        postEntity.setCategories(categoryByIds);
+        postEntity.setCreatedDate(new Date());
+        postEntity.setModifiedDate(new Date());
 
         PostEntity savedPost = postRepository.save(postEntity);
         PostDTO responseDto = saveOrUpdateImage(file, postEntity, savedPost);
@@ -89,7 +88,7 @@ public class PostServiceImpl implements IPostService {
 
         PostEntity oldPost = postRepository.findById(postDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDTO.getId()));
-        String emailOwner = oldPost.getUser().getEmail();
+        String emailOwner = oldPost.getUserProfile().getUser().getEmail();
 
         for (RoleEntity roleEntity : roles) {
             if (!roleEntity.getName().equals("ROLE_ADMIN")) {
@@ -99,7 +98,7 @@ public class PostServiceImpl implements IPostService {
             }
         }
         PostEntity postEntity = converter.toEntity(postDTO, oldPost);
-        postEntity.setModified_date(new Date());
+        postEntity.setModifiedDate(new Date());
         PostDTO responseDto = saveOrUpdateImage(file, postEntity, oldPost);
 
         return responseDto;
@@ -131,7 +130,7 @@ public class PostServiceImpl implements IPostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortOj);
-        Page<PostEntity> postEntities = postRepository.findPostEntityByCategoryEntities(categoryEntity, pageable);
+        Page<PostEntity> postEntities = postRepository.findPostEntitiesByCategories(categoryEntity, pageable);
 
         PageResponsePost pageResponsePost = pagingPost(postEntities);
 

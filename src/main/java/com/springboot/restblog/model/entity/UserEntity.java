@@ -45,11 +45,11 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<RoleEntity> roles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
-    private Set<PostEntity> postEntities = new HashSet<>();
-
-    @OneToMany(mappedBy = "user")
-    private Set<CommentEntity> commentEntities = new HashSet<>();
+//    @OneToMany(mappedBy = "user")
+//    private Set<PostEntity> postEntities = new HashSet<>();
+//
+//    @OneToMany(mappedBy = "user")
+//    private Set<CommentEntity> commentEntities = new HashSet<>();
 
     @OneToOne(mappedBy = "user")
     private UserProfileEntity userProfile;

@@ -5,11 +5,12 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_profile")
@@ -44,4 +45,10 @@ public class UserProfileEntity {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private UserEntity user;
+
+    @OneToMany(mappedBy = "userProfile")
+    private Set<PostEntity> postEntities = new HashSet<>();
+
+    @OneToMany(mappedBy = "userProfile")
+    private Set<CommentEntity> commentEntities = new HashSet<>();
 }

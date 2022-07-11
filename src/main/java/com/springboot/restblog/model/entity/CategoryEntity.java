@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "categoryies", uniqueConstraints = {
+@Table(name = "categories", uniqueConstraints = {
         @UniqueConstraint(columnNames = "name")
 })
 @Getter
@@ -22,6 +22,6 @@ public class CategoryEntity {
     @Column()
     private String name;
 
-    @ManyToMany(mappedBy = "categoryEntities", cascade = CascadeType.ALL)
-    Set<PostEntity> postEntities = new HashSet<>();
+    @ManyToMany(mappedBy = "categories", cascade = CascadeType.ALL)
+    Set<PostEntity> posts = new HashSet<>();
 }

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface PostRepository extends JpaRepository<PostEntity, Integer> {
-    Page<PostEntity> findPostEntityByCategoryEntities(CategoryEntity category, Pageable pageable);
+    Page<PostEntity> findPostEntitiesByCategories(CategoryEntity category, Pageable pageable);
 
     @Query("SELECT p FROM PostEntity p WHERE " +
             "p.title LIKE CONCAT('%', :query, '%')")

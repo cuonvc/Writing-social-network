@@ -31,7 +31,7 @@ public class PostController {
 
         PostDTO postResponse = postService.savePost(categoryIds, postDTO, file);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
-    }
+   }
 //có thể sử dụng thuần formData (set thumbnails có dataType là MultipartFile)
 //    public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "categoryIds") Integer[] categoryIds,
 //                                              @ModelAttribute PostDTO postDTO) throws IOException {

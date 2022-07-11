@@ -85,7 +85,7 @@ public class CategoryServiceImpl implements ICategoryService {
         List<PostEntity> postList = postRepository.findAll();
 
         for (PostEntity post : postList) {
-            Set<CategoryEntity> categoriesInPost = post.getCategoryEntities();
+            Set<CategoryEntity> categoriesInPost = post.getCategories();
 
             for (CategoryEntity category : categoriesInPost) {
                 if (category.getId() == id) {

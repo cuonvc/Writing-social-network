@@ -9,7 +9,6 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -33,17 +32,17 @@ public class PostEntity {
     private String thumbnails;
 
     @Column(name = "created_date")
-    private Date created_date;
+    private Date createdDate;
 
     @Column(name = "modified_date")
-    private Date modified_date;
+    private Date modifiedDate;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentEntity> comments = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @JoinColumn(name = "profile_id", nullable = false)
+    private UserProfileEntity userProfile;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(
@@ -51,7 +50,7 @@ public class PostEntity {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
-    Set<CategoryEntity> categoryEntities = new HashSet<>();
+    Set<CategoryEntity> categories = new HashSet<>();
 
 //    public void setComments(Set<CommentEntity> comments) {
 //        this.comments.addAll(comments);

@@ -16,4 +16,6 @@ public class CommentDTO {
     private Date createdDate;
     private Date modifiedDate;
 
+    private UserProfileDTO userProfile;
+
 }

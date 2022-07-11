@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -39,14 +38,6 @@ public class CommentServiceImpl implements ICommentService {
     @Autowired
     private CommentConverter converter;
 
-    public CommentServiceImpl(CommentRepository commentRepository,
-                              PostRepository postRepository,
-                              CommentConverter converter) {
-        this.commentRepository = commentRepository;
-        this.postRepository = postRepository;
-        this.converter = converter;
-    }
-
     @Override
     public CommentDTO saveComment(Integer postId, CommentDTO commentDTO) {
 
@@ -61,9 +52,10 @@ public class CommentServiceImpl implements ICommentService {
         String emailByUser = authentication.getName();
         UserEntity userByEmail = userRepository.findByEmail(emailByUser).get();
 
-        commentEntity.setUser(userByEmail);
+        commentEntity.setUserProfile(userByEmail.getUserProfile());
         commentEntity.setPost(postById);
         commentEntity.setCreatedDate(new Date());
+        commentEntity.setModifiedDate(new Date());
 
         CommentEntity newComment = commentRepository.save(commentEntity);
 
@@ -77,7 +69,7 @@ public class CommentServiceImpl implements ICommentService {
 
         CommentEntity oldComment = commentRepository.findById(commentDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentDTO.getId()));
-        String emailOwner = oldComment.getUser().getEmail();
+        String emailOwner = oldComment.getUserProfile().getUser().getEmail();
         PostEntity postByComment = oldComment.getPost();
 
         if (!emailClient.equals(emailOwner)) {
@@ -87,7 +79,7 @@ public class CommentServiceImpl implements ICommentService {
         UserEntity userByEmail = userRepository.findByEmail(emailClient).get();
 
         CommentEntity commentEntity = converter.toEntity(oldComment, commentDTO);
-        commentEntity.setUser(userByEmail);
+        commentEntity.setUserProfile(userByEmail.getUserProfile());
         commentEntity.setPost(postByComment);
         commentEntity.setCreatedDate(oldComment.getCreatedDate());
         commentEntity.setModifiedDate(new Date());
