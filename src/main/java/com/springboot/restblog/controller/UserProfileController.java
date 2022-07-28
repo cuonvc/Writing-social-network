@@ -8,6 +8,7 @@ import com.springboot.restblog.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +39,7 @@ public class UserProfileController {
         return new ResponseEntity<>(profileResponse, HttpStatus.OK);
     }
 
+//    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/profiles/role/{role_id}")
     public PageResponseProfile getAllProfileByRole(@PathVariable Integer role_id,
                                                    @RequestParam(value = "pageNo", required = false,
