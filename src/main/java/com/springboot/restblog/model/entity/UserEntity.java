@@ -27,13 +27,13 @@ public class UserEntity {
 //    @Column(name = "last_name")
 //    private String lastName;
 
-    @Column
+    @Column(nullable = false, length = 30)
     private String username;
 
-    @Column
+    @Column(nullable = false, length = 70)
     private String email;
 
-    @Column
+    @Column(nullable = false)
     private String password;
 
     @Column(name = "date_registered")

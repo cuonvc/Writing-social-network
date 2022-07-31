@@ -20,10 +20,10 @@ public class UserProfileEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", length = 20)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", length = 20)
     private String lastName;
 
     @Column
