@@ -39,7 +39,7 @@ public class UserProfileController {
         return new ResponseEntity<>(profileResponse, HttpStatus.OK);
     }
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/profiles/role/{role_id}")
     public PageResponseProfile getAllProfileByRole(@PathVariable Integer role_id,
                                                    @RequestParam(value = "pageNo", required = false,
