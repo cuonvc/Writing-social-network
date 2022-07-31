@@ -7,6 +7,7 @@ import com.springboot.restblog.model.entity.*;
 import com.springboot.restblog.model.payload.CustomUser;
 import com.springboot.restblog.model.payload.PostDTO;
 import com.springboot.restblog.model.payload.PageResponsePost;
+import com.springboot.restblog.model.payload.UserProfileDTO;
 import com.springboot.restblog.repository.CategoryRepository;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.repository.UserRepository;
@@ -74,8 +75,8 @@ public class PostServiceImpl implements IPostService {
         postEntity.setModifiedDate(new Date());
 
         PostEntity savedPost = postRepository.save(postEntity);
-        PostDTO responseDto = saveOrUpdateImage(file, postEntity, savedPost);
 
+        PostDTO responseDto = responsePost(file, postEntity, savedPost);
         return responseDto;
     }
 
@@ -99,8 +100,8 @@ public class PostServiceImpl implements IPostService {
         }
         PostEntity postEntity = converter.toEntity(postDTO, oldPost);
         postEntity.setModifiedDate(new Date());
-        PostDTO responseDto = saveOrUpdateImage(file, postEntity, oldPost);
 
+        PostDTO responseDto = responsePost(file, postEntity, oldPost);
         return responseDto;
     }
 
@@ -185,6 +186,10 @@ public class PostServiceImpl implements IPostService {
         for (PostEntity postEntity : postEntityList) {
             PostDTO postDTO = converter.toDTO(postEntity);
             setUrlImage(postDTO, postEntity);
+
+            UserProfileDTO profileDTO = postDTO.getUserProfile();
+            resetUrlImageProfile(profileDTO);
+
             contentList.add(postDTO);
         }
 
@@ -206,7 +211,34 @@ public class PostServiceImpl implements IPostService {
 
         PostDTO responseDto = converter.toDTO(postEntity);
         setUrlImage(responseDto, postEntity);
+
+        UserProfileDTO profileDTO = responseDto.getUserProfile();
+        resetUrlImageProfile(profileDTO);
+
         return responseDto;
+    }
+
+    private PostDTO responsePost(MultipartFile file, PostEntity entity, PostEntity savedEntity)
+            throws IOException {
+        PostDTO postDTO = saveOrUpdateImage(file, entity, savedEntity);
+        UserProfileDTO profileDTO = postDTO.getUserProfile();
+        resetUrlImageProfile(profileDTO);
+
+        return postDTO;
+    }
+
+    private void resetUrlImageProfile(UserProfileDTO profileDTO) {
+        String urlAvatar = urlResponseImageProfile(profileDTO.getAvatarPhoto());
+        String urlCover = urlResponseImageProfile((profileDTO.getCoverPhoto()));
+
+        profileDTO.setAvatarPhoto(urlAvatar);
+        profileDTO.setCoverPhoto(urlCover);
+    }
+
+    private String urlResponseImageProfile(String oldPath) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + oldPath)
+                .toUriString();
     }
 
     @Override
