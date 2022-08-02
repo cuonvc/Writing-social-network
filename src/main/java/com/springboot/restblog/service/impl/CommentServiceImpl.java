@@ -8,6 +8,8 @@ import com.springboot.restblog.model.entity.PostEntity;
 import com.springboot.restblog.model.entity.UserEntity;
 import com.springboot.restblog.model.payload.CommentDTO;
 import com.springboot.restblog.model.payload.CustomUser;
+import com.springboot.restblog.model.payload.PostDTO;
+import com.springboot.restblog.model.payload.UserProfileDTO;
 import com.springboot.restblog.repository.CommentRepository;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.repository.UserRepository;
@@ -17,7 +19,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -58,8 +63,7 @@ public class CommentServiceImpl implements ICommentService {
         commentEntity.setModifiedDate(new Date());
 
         CommentEntity newComment = commentRepository.save(commentEntity);
-
-        return converter.toDTO(newComment);
+        return responseComment(newComment);
     }
 
     @Override
@@ -85,15 +89,14 @@ public class CommentServiceImpl implements ICommentService {
         commentEntity.setModifiedDate(new Date());
 
         CommentEntity newComment = commentRepository.save(commentEntity);
-        return converter.toDTO(newComment);
-        //chưa test save and update comment và chỉnh sửa controller các method dưới
+        return responseComment(newComment);
     }
 
     public CommentDTO getById(Integer id) {
         CommentEntity commentById = commentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", id));
 
-        return converter.toDTO(commentById);
+        return responseComment(commentById);
     }
 
     @Override
@@ -103,7 +106,9 @@ public class CommentServiceImpl implements ICommentService {
 
         Set<CommentEntity> commentEntities = postEntity.getComments();
 
-        List<CommentDTO> commentList = commentEntities.stream().map(comment -> converter.toDTO(comment))
+        List<CommentDTO> commentList = commentEntities
+                .stream()
+                .map(comment -> responseComment(comment))
                 .collect(Collectors.toList());
 
         return commentList;
@@ -116,4 +121,28 @@ public class CommentServiceImpl implements ICommentService {
 
         commentRepository.delete(commentById);
     }
+
+    private CommentDTO responseComment(CommentEntity savedEntity) {
+        CommentDTO commentDTO = converter.toDTO(savedEntity);
+        UserProfileDTO profileDTO = commentDTO.getUserProfile();
+        resetUrlImageProfile(profileDTO);
+
+        return commentDTO;
+    }
+
+    private void resetUrlImageProfile(UserProfileDTO profileDTO) {
+        String urlAvatar = urlResponseImageProfile(profileDTO.getAvatarPhoto());
+        String urlCover = urlResponseImageProfile((profileDTO.getCoverPhoto()));
+
+        profileDTO.setAvatarPhoto(urlAvatar);
+        profileDTO.setCoverPhoto(urlCover);
+    }
+
+    private String urlResponseImageProfile(String oldPath) {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + oldPath)
+                .toUriString();
+    }
 }
+
+

@@ -4,10 +4,7 @@ import com.springboot.restblog.exception.APIException;
 import com.springboot.restblog.exception.ResourceNotFoundException;
 import com.springboot.restblog.model.converter.PostConverter;
 import com.springboot.restblog.model.entity.*;
-import com.springboot.restblog.model.payload.CustomUser;
-import com.springboot.restblog.model.payload.PostDTO;
-import com.springboot.restblog.model.payload.PageResponsePost;
-import com.springboot.restblog.model.payload.UserProfileDTO;
+import com.springboot.restblog.model.payload.*;
 import com.springboot.restblog.repository.CategoryRepository;
 import com.springboot.restblog.repository.PostRepository;
 import com.springboot.restblog.repository.UserRepository;
@@ -25,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements IPostService {
@@ -214,6 +212,13 @@ public class PostServiceImpl implements IPostService {
 
         UserProfileDTO profileDTO = responseDto.getUserProfile();
         resetUrlImageProfile(profileDTO);
+
+        int size = responseDto.getComments().size();
+        List<CommentDTO> commentDTOList = new ArrayList<>(size);
+        commentDTOList.addAll(responseDto.getComments());
+        for (CommentDTO comment : commentDTOList) {
+            resetUrlImageProfile(comment.getUserProfile());
+        }
 
         return responseDto;
     }
