@@ -54,10 +54,10 @@ public class CommentServiceImpl implements ICommentService {
         CommentEntity commentEntity;
         commentEntity = converter.toEntity(commentDTO);
 
-        String emailByUser = authentication.getName();
-        UserEntity userByEmail = userRepository.findByEmail(emailByUser).get();
+        String usernameByUser = authentication.getName();
+        UserEntity userByUsername = userRepository.findByUsername(usernameByUser).get();
 
-        commentEntity.setUserProfile(userByEmail.getUserProfile());
+        commentEntity.setUserProfile(userByUsername.getUserProfile());
         commentEntity.setPost(postById);
         commentEntity.setCreatedDate(new Date());
         commentEntity.setModifiedDate(new Date());
@@ -69,21 +69,21 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     public CommentDTO updateCommentById(CommentDTO commentDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String emailClient = authentication.getName();
+        String usernameClient = authentication.getName();
 
         CommentEntity oldComment = commentRepository.findById(commentDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Comment", "id", commentDTO.getId()));
-        String emailOwner = oldComment.getUserProfile().getUser().getEmail();
+        String usernameOwner = oldComment.getUserProfile().getUser().getUsername();
         PostEntity postByComment = oldComment.getPost();
 
-        if (!emailClient.equals(emailOwner)) {
+        if (!usernameClient.equals(usernameOwner)) {
             throw new APIException(HttpStatus.BAD_REQUEST, "Comment does not belong to this user");
         }
 
-        UserEntity userByEmail = userRepository.findByEmail(emailClient).get();
+        UserEntity userByUsername = userRepository.findByUsername(usernameClient).get();
 
         CommentEntity commentEntity = converter.toEntity(oldComment, commentDTO);
-        commentEntity.setUserProfile(userByEmail.getUserProfile());
+        commentEntity.setUserProfile(userByUsername.getUserProfile());
         commentEntity.setPost(postByComment);
         commentEntity.setCreatedDate(oldComment.getCreatedDate());
         commentEntity.setModifiedDate(new Date());

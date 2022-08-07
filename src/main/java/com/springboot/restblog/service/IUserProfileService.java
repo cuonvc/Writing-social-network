@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface IUserProfileService {
-    UserProfileDTO getProfileByUser(Integer userId);
+    UserProfileDTO getProfileByUsername(String username);
     PageResponseProfile getAllByRole(Integer role_id, Integer pageNo, Integer pageSize, String sortBy, String dir);
     PageResponseProfile filterByKeyword(String keyword, Integer pageNo, Integer pageSize, String sortBy, String dir);
     UserProfileDTO setInfoUser(UserProfileDTO userProfileDTO);

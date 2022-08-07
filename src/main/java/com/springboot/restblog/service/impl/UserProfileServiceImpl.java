@@ -44,10 +44,10 @@ public class UserProfileServiceImpl implements IUserProfileService {
     private UserProfileConverter converter;
 
     @Override
-    public UserProfileDTO getProfileByUser(Integer userId) {
+    public UserProfileDTO getProfileByUsername(String username) {
 
-        UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", username));
 
         UserProfileEntity userProfile = userProfileRepository.findUserProfileEntityByUser(userEntity).get();
 

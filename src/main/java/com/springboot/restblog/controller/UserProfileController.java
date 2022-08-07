@@ -32,9 +32,9 @@ public class UserProfileController {
         return new ResponseEntity<>(profileResponse, HttpStatus.OK);
     }
 
-    @GetMapping("/profile/{userId}")
-    public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable(name = "userId") Integer userId) {
-        UserProfileDTO profileResponse = userProfileService.getProfileByUser(userId);
+    @GetMapping("/profile/{username}")
+    public ResponseEntity<UserProfileDTO> getUserProfile(@PathVariable(name = "username") String username) {
+        UserProfileDTO profileResponse = userProfileService.getProfileByUsername(username);
 
         return new ResponseEntity<>(profileResponse, HttpStatus.OK);
     }
