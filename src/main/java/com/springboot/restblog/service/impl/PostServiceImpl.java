@@ -81,17 +81,18 @@ public class PostServiceImpl implements IPostService {
     @Override
     public PostDTO editPost(PostDTO postDTO, MultipartFile file) throws IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String emailClient = authentication.getName();
+        String usernamClient = authentication.getName();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
         Set<RoleEntity> roles = customUser.getRoles();
 
         PostEntity oldPost = postRepository.findById(postDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Post", "id", postDTO.getId()));
-        String emailOwner = oldPost.getUserProfile().getUser().getEmail();
+        String usernameOwner = oldPost.getUserProfile().getUser().getUsername();
+
 
         for (RoleEntity roleEntity : roles) {
             if (!roleEntity.getName().equals("ROLE_ADMIN")) {
-                if (!emailClient.equals(emailOwner)) {
+                if (!usernamClient.equals(usernameOwner)) {
                     throw new APIException(HttpStatus.BAD_REQUEST, "User do not allow access this post");
                 }
             }
