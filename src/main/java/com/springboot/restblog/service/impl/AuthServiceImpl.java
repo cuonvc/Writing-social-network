@@ -81,6 +81,8 @@ public class AuthServiceImpl implements IAuthService {
         userProfile.setUser(user);
         userProfile.setFirstName(registerDTO.getFirstName());
         userProfile.setLastName(registerDTO.getLastName());
+        userProfile.setAvatarPhoto("uploaded-images/user-avatars/default/default-avt.png");
+        userProfile.setCoverPhoto("uploaded-images/user-covers/default-background.jpg");
 
         userProfileRepository.save(userProfile);
 

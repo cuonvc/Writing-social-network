@@ -157,7 +157,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
             profileEntity.setAvatarPhoto(path.toString().replace("\\", "/"));  //convert lại cho xuôi
         } else {
             if (profileEntity.getAvatarPhoto().isEmpty()) {
-                profileEntity.setAvatarPhoto(null);
+                profileEntity.setAvatarPhoto("uploaded-images/user-avatars/default/default-avt.png");
             }
         }
 
@@ -186,7 +186,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
             profileEntity.setCoverPhoto(path.toString().replace("\\", "/"));  //convert lại cho xuôi
         } else {
             if (profileEntity.getCoverPhoto().isEmpty()) {
-                profileEntity.setCoverPhoto(null);
+                profileEntity.setCoverPhoto("uploaded-images/user-covers/default-background.jpg");
             }
         }
 

@@ -267,7 +267,7 @@ public class PostServiceImpl implements IPostService {
             savedPost.setThumbnails(path.toString().replace("\\", "/"));
         } else {
             if (savedPost.getThumbnails() == null) {
-                savedPost.setThumbnails(null);
+                savedPost.setThumbnails("uploaded-images/post_thumbnails/default/default-thumbnail.jpg");
             }
         }
 
