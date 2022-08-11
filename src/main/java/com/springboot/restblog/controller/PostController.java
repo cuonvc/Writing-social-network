@@ -11,12 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.nio.file.Path;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping("/api/v1")
 public class PostController {
 
@@ -24,22 +26,23 @@ public class PostController {
     @Autowired
     private IPostService postService;
 
-    @PostMapping("/category/{categoryIds}/post")
-    //mix json and file trong formData
-    public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "categoryIds") Integer[] categoryIds,
-                                              @RequestPart ("textField") PostDTO postDTO,
-                                              @RequestPart ("image") @ValidImage MultipartFile file) throws IOException {
+    @PostMapping("/post/image")
+    public ResponseEntity<String> getImageByPost(@RequestPart ("image") @ValidImage MultipartFile file)
+            throws IOException {
+        String pathStr = postService.saveImageByPost(file);
+        String url = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("files/" + pathStr)
+                .toUriString();
+        return new ResponseEntity<>(url, HttpStatus.OK);
+    }
 
-        PostDTO postResponse = postService.savePost(categoryIds, postDTO, file);
+    @PostMapping("/category/{categoryIds}/post")
+    public ResponseEntity<PostDTO> createPost(@PathVariable(name = "categoryIds") Integer[] categoryIds,
+                                              @Valid @RequestBody PostDTO postDTO) {
+
+        PostDTO postResponse = postService.savePost(categoryIds, postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
    }
-//có thể sử dụng thuần formData (set thumbnails có dataType là MultipartFile)
-//    public ResponseEntity<PostDTO> createPost(@Valid @PathVariable(name = "categoryIds") Integer[] categoryIds,
-//                                              @ModelAttribute PostDTO postDTO) throws IOException {
-//
-//        PostDTO postResponse = postService.savePost(categoryIds, postDTO);
-//        return new ResponseEntity<>(postResponse, HttpStatus.CREATED);
-//    }
 
     @GetMapping("/posts")
     public PageResponsePost getAllPost(@RequestParam(value = "pageNo",
@@ -92,11 +95,10 @@ public class PostController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     @PutMapping("/post/{id}")
-    public ResponseEntity<PostDTO> updatePost(@Valid @PathVariable(name = "id") Integer id,
-                                              @RequestPart ("textField") PostDTO postDTO,
-                                              @RequestPart ("image") @ValidImage MultipartFile file) throws IOException {
+    public ResponseEntity<PostDTO> updatePost(@PathVariable(name = "id") Integer id,
+                                              @Valid @RequestBody PostDTO postDTO) {
         postDTO.setId(id);
-        PostDTO postResponse = postService.editPost(postDTO, file);
+        PostDTO postResponse = postService.editPost(postDTO);
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 

@@ -19,8 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -39,8 +41,30 @@ public class PostServiceImpl implements IPostService {
     @Autowired
     private PostConverter converter;
 
+    private static String PATH_THUMBNAIL;
+
     @Override
-    public PostDTO savePost(Integer[] categoryIds, PostDTO postDTO, MultipartFile file) throws IOException {
+    public String saveImageByPost(MultipartFile file) throws IOException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUser customUser = (CustomUser) authentication.getPrincipal();
+        Integer idUser = customUser.getUserId();
+        userRepository.findById(idUser)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", idUser));
+
+        String uploadDir = "uploaded-images/post_thumbnails";
+        float fileSizeMegabytes = file.getSize() / 1000000.0f;
+        if (fileSizeMegabytes > 5.0f) {
+            throw new RuntimeException("File must be maximum 5 megabytes");
+        }
+//        FileUploadUtils.cleanDir(uploadDir);
+        Path path = FileUploadUtils.saveFile(uploadDir, file);
+        String pathStr = path.toString().replace("\\", "/");
+        PATH_THUMBNAIL = pathStr;
+        return pathStr;
+    }
+
+    @Override
+    public PostDTO savePost(Integer[] categoryIds, PostDTO postDTO) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
@@ -72,14 +96,12 @@ public class PostServiceImpl implements IPostService {
         postEntity.setCreatedDate(new Date());
         postEntity.setModifiedDate(new Date());
 
-        PostEntity savedPost = postRepository.save(postEntity);
-
-        PostDTO responseDto = responsePost(file, postEntity, savedPost);
+        PostDTO responseDto = responsePost(postEntity);
         return responseDto;
     }
 
     @Override
-    public PostDTO editPost(PostDTO postDTO, MultipartFile file) throws IOException {
+    public PostDTO editPost(PostDTO postDTO) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usernamClient = authentication.getName();
         CustomUser customUser = (CustomUser) authentication.getPrincipal();
@@ -100,7 +122,7 @@ public class PostServiceImpl implements IPostService {
         PostEntity postEntity = converter.toEntity(postDTO, oldPost);
         postEntity.setModifiedDate(new Date());
 
-        PostDTO responseDto = responsePost(file, postEntity, oldPost);
+        PostDTO responseDto = responsePost(postEntity);
         return responseDto;
     }
 
@@ -113,7 +135,7 @@ public class PostServiceImpl implements IPostService {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, sortOj);
         Page<PostEntity> postEntities = postRepository.findAll(pageable);
-
+        System.out.println(PATH_THUMBNAIL);
         PageResponsePost pageResponsePost = pagingPost(postEntities);
 
         return pageResponsePost;
@@ -224,9 +246,8 @@ public class PostServiceImpl implements IPostService {
         return responseDto;
     }
 
-    private PostDTO responsePost(MultipartFile file, PostEntity entity, PostEntity savedEntity)
-            throws IOException {
-        PostDTO postDTO = saveOrUpdateImage(file, entity, savedEntity);
+    private PostDTO responsePost(PostEntity entity) {
+        PostDTO postDTO = saveOrUpdateImage(entity);
         UserProfileDTO profileDTO = postDTO.getUserProfile();
         resetUrlImageProfile(profileDTO);
 
@@ -255,19 +276,21 @@ public class PostServiceImpl implements IPostService {
         postRepository.delete(postResponse);
     }
 
-    private PostDTO saveOrUpdateImage(MultipartFile file,PostEntity entity, PostEntity savedPost) throws IOException {
-        if (!file.isEmpty()) {
-            String uploadDir = "uploaded-images/post_thumbnails/" + savedPost.getId();
-            float fileSizeMegabytes = file.getSize() / 1000000.0f;
-            if (fileSizeMegabytes > 5.0f) {
-                throw new RuntimeException("File must be maximum 5 megabytes");
-            }
-            FileUploadUtils.cleanDir(uploadDir);
-            Path path = FileUploadUtils.saveFile(uploadDir, file);
-            savedPost.setThumbnails(path.toString().replace("\\", "/"));
+    private PostDTO saveOrUpdateImage(PostEntity entity) {
+        if (PATH_THUMBNAIL == null) {
+            entity.setThumbnails("uploaded-images/post_thumbnails/default/default-thumbnail.jpg");
         } else {
-            if (savedPost.getThumbnails() == null) {
-                savedPost.setThumbnails("uploaded-images/post_thumbnails/default/default-thumbnail.jpg");
+            List<PostEntity> postEntityList = postRepository.findAll();
+            int count = 0;
+            for (PostEntity postEntity : postEntityList) {
+                //nếu static variable bị sử dụng lại lần 2 => post mới được tạo không có thumb
+                if (postEntity.getThumbnails().compareTo(PATH_THUMBNAIL) == 0) {
+                    entity.setThumbnails("uploaded-images/post_thumbnails/default/default-thumbnail.jpg");
+                    count = 1;
+                }
+            }
+            if (count == 0) {  //static variable chưa được sử dụng => mới tạo => set cho new post
+                entity.setThumbnails(PATH_THUMBNAIL);
             }
         }
 
