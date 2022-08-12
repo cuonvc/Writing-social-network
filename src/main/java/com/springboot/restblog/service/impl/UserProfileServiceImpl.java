@@ -52,6 +52,7 @@ public class UserProfileServiceImpl implements IUserProfileService {
         UserProfileEntity userProfile = userProfileRepository.findUserProfileEntityByUser(userEntity).get();
 
         UserProfileDTO profileResponse = converter.toDto(userProfile);
+        profileResponse.setEmailByUser(userEntity.getEmail());
         setUrlAvartarAndCover(userProfile, profileResponse);
 
         return profileResponse;
