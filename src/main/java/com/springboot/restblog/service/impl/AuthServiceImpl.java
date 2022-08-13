@@ -9,6 +9,7 @@ import com.springboot.restblog.repository.RoleRepository;
 import com.springboot.restblog.repository.UserProfileRepository;
 import com.springboot.restblog.repository.UserRepository;
 import com.springboot.restblog.service.IAuthService;
+import com.springboot.restblog.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,9 +70,11 @@ public class AuthServiceImpl implements IAuthService {
         }
 
         UserEntity user = new UserEntity();
-
-//        user.setFirstName(registerDTO.getFirstName());
-//        user.setLastName(registerDTO.getLastName());
+        String email = registerDTO.getEmail();
+        if (!AppConstants.validate(email)) {
+            throw new APIException(HttpStatus.BAD_REQUEST, "Email invalid");
+        }
+        user.setEmail(email);
         user.setUsername(registerDTO.getUsername());
         user.setEmail(registerDTO.getEmail());
         user.setPassword(passwordEncoder.encode(registerDTO.getPassword()));

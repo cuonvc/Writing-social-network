@@ -12,6 +12,7 @@ import com.springboot.restblog.repository.RoleRepository;
 import com.springboot.restblog.repository.UserProfileRepository;
 import com.springboot.restblog.repository.UserRepository;
 import com.springboot.restblog.service.IUserProfileService;
+import com.springboot.restblog.utils.AppConstants;
 import com.springboot.restblog.utils.FileUploadUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -133,6 +134,22 @@ public class UserProfileServiceImpl implements IUserProfileService {
         UserEntity userEntity = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
         UserProfileEntity oldProfile = userProfileRepository.findUserProfileEntityByUser(userEntity).get();
+
+        String newEmail = userProfileDTO.getEmailByUser();
+        if (!newEmail.equals(userEntity.getEmail())) {
+            if (AppConstants.validate(newEmail)) {
+                List<UserEntity> listUser = userRepository.findAll();
+                for (UserEntity user : listUser) {
+                    if (newEmail.equals(user.getEmail())) {
+                        throw new APIException(HttpStatus.BAD_REQUEST, "Email was created by difference user");
+                    }
+                }
+                userEntity.setEmail(newEmail);
+                userRepository.save(userEntity);
+            } else {
+                throw new APIException(HttpStatus.BAD_REQUEST, "Email invalid");
+            }
+        }
 
         UserProfileEntity newProfile = userProfileRepository.save(converter.toEntity(oldProfile, userProfileDTO));
         UserProfileDTO responseDto = converter.toDto(newProfile);
