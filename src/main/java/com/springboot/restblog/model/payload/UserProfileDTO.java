@@ -7,6 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.*;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,6 +16,7 @@ public class UserProfileDTO {
 
     private Integer id;
     private String emailByUser;
+    private List<RoleDTO> roles;
     private String firstName;
     private String lastName;
     private String fullName;

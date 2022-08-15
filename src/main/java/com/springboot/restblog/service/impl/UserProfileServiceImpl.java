@@ -2,6 +2,7 @@ package com.springboot.restblog.service.impl;
 
 import com.springboot.restblog.exception.APIException;
 import com.springboot.restblog.exception.ResourceNotFoundException;
+import com.springboot.restblog.model.converter.RoleConverter;
 import com.springboot.restblog.model.converter.UserProfileConverter;
 import com.springboot.restblog.model.entity.PostEntity;
 import com.springboot.restblog.model.entity.RoleEntity;
@@ -44,6 +45,9 @@ public class UserProfileServiceImpl implements IUserProfileService {
     @Autowired
     private UserProfileConverter converter;
 
+    @Autowired
+    private RoleConverter roleConverter;
+
     @Override
     public UserProfileDTO getProfileByUsername(String username) {
 
@@ -54,6 +58,9 @@ public class UserProfileServiceImpl implements IUserProfileService {
 
         UserProfileDTO profileResponse = converter.toDto(userProfile);
         profileResponse.setEmailByUser(userEntity.getEmail());
+        List<RoleDTO> roles = userEntity.getRoles().stream().map(roleEntity
+                -> roleConverter.toDto(roleEntity)).collect(Collectors.toList());
+        profileResponse.setRoles(roles);
         setUrlAvartarAndCover(userProfile, profileResponse);
 
         return profileResponse;
