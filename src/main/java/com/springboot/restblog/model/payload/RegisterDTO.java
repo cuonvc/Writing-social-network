@@ -31,7 +31,7 @@ public class RegisterDTO {
 
     @NotEmpty
     @NotBlank
-    @Email
+    @Email(message = "Email invalid")
     @Size(max = 70, message = "Email must be maximum 70 characters")
     private String email;
 
