@@ -25,29 +25,27 @@ public class CommentConverter {
 
         //replace
         CommentDTO dto = mapper.map(entity, CommentDTO.class);
+        dto.getUserProfile().setUsernameByUser(entity.getUserProfile().getUser().getUsername());
+        dto.getUserProfile().setEmailByUser(entity.getUserProfile().getUser().getEmail());
 
         return dto;
     }
 
     public CommentEntity toEntity(CommentDTO dto) {
-//        CommentEntity entity = new CommentEntity();
-//        entity.setName(dto.getName());
-//        entity.setEmail(dto.getEmail());
-//        entity.setContent(dto.getContent());
+        CommentEntity entity = new CommentEntity();
+        entity.setContent(dto.getContent());
 
         //replace
-        CommentEntity entity = mapper.map(dto, CommentEntity.class);
+//        CommentEntity entity = mapper.map(dto, CommentEntity.class);
 
         return entity;
     }
 
     public CommentEntity toEntity(CommentEntity entity, CommentDTO dto) {
-//        entity.setName(dto.getName());
-//        entity.setEmail(dto.getEmail());
-//        entity.setContent(dto.getContent());
+        entity.setContent(dto.getContent());
 
         //replace
-        entity = mapper.map(dto, CommentEntity.class);
+//        entity = mapper.map(dto, CommentEntity.class);
 
         return entity;
     }
