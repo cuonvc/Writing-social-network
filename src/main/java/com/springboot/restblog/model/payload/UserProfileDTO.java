@@ -16,6 +16,7 @@ public class UserProfileDTO {
 
     private Integer id;
     private String emailByUser;
+    private String usernameByUser;
     private List<RoleDTO> roles;
     private String firstName;
     private String lastName;

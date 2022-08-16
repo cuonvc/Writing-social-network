@@ -1,5 +1,6 @@
 package com.springboot.restblog.model.converter;
 
+import com.springboot.restblog.model.entity.UserEntity;
 import com.springboot.restblog.model.entity.UserProfileEntity;
 import com.springboot.restblog.model.payload.UserProfileDTO;
 import org.modelmapper.ModelMapper;
@@ -27,6 +28,10 @@ public class UserProfileConverter {
         dto.setDateOfBirth(entity.getDateOfBirth());
         dto.setAvatarPhoto(entity.getAvatarPhoto());
         dto.setCoverPhoto(entity.getCoverPhoto());
+
+        UserEntity userEntity = entity.getUser();
+        dto.setEmailByUser(userEntity.getEmail());
+        dto.setUsernameByUser(userEntity.getUsername());
 
         return dto;
     }
