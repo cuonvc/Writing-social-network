@@ -127,6 +127,14 @@ public class PostServiceImpl implements IPostService {
     }
 
     @Override
+    public void pinOrUnpinPost(Integer id, Boolean pinned) {
+        PostEntity postEntity = postRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Post", "id", id));
+        postEntity.setPinned(pinned);
+        postRepository.save(postEntity);
+    }
+
+    @Override
     public PageResponsePost getAll(Integer pageNo, Integer pageSize, String sortBy, String sortDir) {
 
         Sort sortOj = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name())

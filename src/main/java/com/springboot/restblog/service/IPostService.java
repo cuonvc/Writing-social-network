@@ -11,6 +11,7 @@ public interface IPostService {
 
     PostDTO savePost(Integer[] categoryIds, PostDTO postDTO) ;
     PostDTO editPost(PostDTO postDTO);
+    void pinOrUnpinPost(Integer id, Boolean pinned);
     String saveImageByPost(MultipartFile file) throws IOException;
     PageResponsePost getAll(Integer pageNo, Integer pageSize, String sortBy, String sortDir);
     PageResponsePost getByCategory(Integer categoryId, Integer pageNo, Integer pageSize, String sortBy, String sortDir);

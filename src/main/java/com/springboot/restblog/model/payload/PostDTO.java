@@ -32,6 +32,7 @@ public class PostDTO {
 
     private Date createdDate;
     private Date modifiedDate;
+    private Boolean pinned;
 
     private Set<CategoryDTO> categories = new HashSet<>();
 

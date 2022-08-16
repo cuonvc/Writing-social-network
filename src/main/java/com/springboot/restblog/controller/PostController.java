@@ -103,6 +103,14 @@ public class PostController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/post/{id}/{status}")
+    public ResponseEntity<String> pinOrUnpin(@PathVariable(name = "id") Integer id,
+                                              @PathVariable(name = "status") Boolean pinned) {
+        postService.pinOrUnpinPost(id, pinned);
+        return new ResponseEntity<>("The post has been successfully pinned or unpinned", HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/post/{id}")
     public ResponseEntity<String> deletePost(@PathVariable(name = "id") Integer id) {
         postService.deleteById(id);

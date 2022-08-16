@@ -37,6 +37,9 @@ public class PostEntity {
     @Column(name = "modified_date")
     private Date modifiedDate;
 
+    @Column
+    private Boolean pinned;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CommentEntity> comments = new HashSet<>();
 
