@@ -57,9 +57,6 @@ public class UserProfileServiceImpl implements IUserProfileService {
         UserProfileEntity userProfile = userProfileRepository.findUserProfileEntityByUser(userEntity).get();
 
         UserProfileDTO profileResponse = converter.toDto(userProfile);
-        List<RoleDTO> roles = userEntity.getRoles().stream().map(roleEntity
-                -> roleConverter.toDto(roleEntity)).collect(Collectors.toList());
-        profileResponse.setRoles(roles);
         setUrlAvartarAndCover(userProfile, profileResponse);
 
         return profileResponse;

@@ -1,6 +1,7 @@
 package com.springboot.restblog.model.payload;
 
 import com.springboot.restblog.anotation.ValidImage;
+import com.springboot.restblog.model.entity.RoleEntity;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,7 +18,7 @@ public class UserProfileDTO {
     private Integer id;
     private String emailByUser;
     private String usernameByUser;
-    private List<RoleDTO> roles;
+    private Set<RoleDTO> roles;
     private String firstName;
     private String lastName;
     private String fullName;

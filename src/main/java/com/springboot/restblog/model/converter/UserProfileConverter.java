@@ -1,11 +1,16 @@
 package com.springboot.restblog.model.converter;
 
+import com.springboot.restblog.model.entity.RoleEntity;
 import com.springboot.restblog.model.entity.UserEntity;
 import com.springboot.restblog.model.entity.UserProfileEntity;
+import com.springboot.restblog.model.payload.RoleDTO;
 import com.springboot.restblog.model.payload.UserProfileDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class UserProfileConverter {
@@ -32,6 +37,15 @@ public class UserProfileConverter {
         UserEntity userEntity = entity.getUser();
         dto.setEmailByUser(userEntity.getEmail());
         dto.setUsernameByUser(userEntity.getUsername());
+
+        Set<RoleDTO> roleDTOS = new HashSet<>();
+        RoleConverter roleConverter = new RoleConverter();
+        for (RoleEntity roleEntity : userEntity.getRoles()) {
+            RoleDTO roleDTO = roleConverter.toDto(roleEntity);
+            roleDTOS.add(roleDTO);
+        }
+        dto.setRoles(roleDTOS);
+
 
         return dto;
     }
