@@ -54,19 +54,6 @@ public class RestBlogApplication implements CommandLineRunner {
 		roleEntities.add(adminRole);
 
 		UserEntity admin = new UserEntity();
-//		admin.setEmail("prnvc5802@gmail.com");
-//		admin.setDateRegistered(new Date());
-//		admin.setPassword("$2a$10$M4kpgo15C6SC/5eKPx40Juv2OyDq9Ys8za7ZESC9B00L8crY2mOhq");
-//		admin.setUsername("cuongadminnvc");
-//
-//		UserProfileEntity userProfile = new UserProfileEntity();
-//		userProfile.setUser(admin);
-//		userProfile.setFirstName("Cuong");
-//		userProfile.setLastName("Nguyen");
-//		profileRepository.save(userProfile);
-//		admin.setRoles(roleEntities);
-//
-//		userRepository.save(admin);
 		admin.setUsername("cuongadminnvc");
 		admin.setEmail("prnvc5802@gmail.com");
 		admin.setPassword("$2a$10$M4kpgo15C6SC/5eKPx40Juv2OyDq9Ys8za7ZESC9B00L8crY2mOhq");
