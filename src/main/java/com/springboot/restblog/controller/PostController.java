@@ -15,7 +15,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
-import java.nio.file.Path;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)

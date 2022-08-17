@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 
 @Service

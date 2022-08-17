@@ -54,8 +54,4 @@ public class PostEntity {
             inverseJoinColumns = @JoinColumn(name = "category_id")
     )
     Set<CategoryEntity> categories = new HashSet<>();
-
-//    public void setComments(Set<CommentEntity> comments) {
-//        this.comments.addAll(comments);
-//    }
 }

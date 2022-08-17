@@ -1,8 +1,6 @@
 package com.springboot.restblog.service;
 
 import com.springboot.restblog.model.payload.RoleDTO;
-
-import javax.management.relation.Role;
 import java.util.List;
 
 public interface IRoleService {

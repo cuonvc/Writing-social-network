@@ -3,7 +3,6 @@ package com.springboot.restblog.model.payload;
 import com.springboot.restblog.model.entity.RoleEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Set;

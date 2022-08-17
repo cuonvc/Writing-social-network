@@ -20,9 +20,6 @@ public class UserProfileConverter {
 
     public UserProfileDTO toDto(UserProfileEntity entity) {
 
-//        String fullName = entity.getFullName();
-//        String[] array = fullName.split(" ");
-
         UserProfileDTO dto = new UserProfileDTO();
         dto.setId(entity.getId());
         dto.setFirstName(entity.getFirstName());

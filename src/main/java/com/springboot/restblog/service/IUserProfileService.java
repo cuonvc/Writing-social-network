@@ -5,7 +5,6 @@ import com.springboot.restblog.model.payload.UserProfileDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface IUserProfileService {
     UserProfileDTO getProfileByUsername(String username);

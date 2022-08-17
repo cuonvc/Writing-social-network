@@ -21,12 +21,6 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-//    @Column(name = "first_name")
-//    private String firstName;
-//
-//    @Column(name = "last_name")
-//    private String lastName;
-
     @Column(nullable = false, length = 30)
     private String username;
 
@@ -45,20 +39,6 @@ public class UserEntity {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<RoleEntity> roles = new HashSet<>();
 
-//    @OneToMany(mappedBy = "user")
-//    private Set<PostEntity> postEntities = new HashSet<>();
-//
-//    @OneToMany(mappedBy = "user")
-//    private Set<CommentEntity> commentEntities = new HashSet<>();
-
     @OneToOne(mappedBy = "user")
     private UserProfileEntity userProfile;
-
-//    @Override
-//    public String toString() {
-//        return "UserEntity{" +
-//                "firstName='" + firstName + '\'' +
-//                ", lastName='" + lastName + '\'' +
-//                '}';
-//    }
 }

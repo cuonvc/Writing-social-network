@@ -1,8 +1,6 @@
 package com.springboot.restblog.anotation.validator;
 
 import com.springboot.restblog.anotation.ValidImage;
-import com.springboot.restblog.exception.APIException;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.ConstraintValidator;

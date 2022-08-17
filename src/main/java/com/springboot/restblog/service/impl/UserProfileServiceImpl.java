@@ -45,9 +45,6 @@ public class UserProfileServiceImpl implements IUserProfileService {
     @Autowired
     private UserProfileConverter converter;
 
-    @Autowired
-    private RoleConverter roleConverter;
-
     @Override
     public UserProfileDTO getProfileByUsername(String username) {
 
