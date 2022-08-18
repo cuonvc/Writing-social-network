@@ -1,14 +1,14 @@
-#architectural
+# architectural
 - **Restful API**
 
-#Tech stack
+# Tech stack
 - **Client**: HTML, CSS, Javascript
 - **Server**: Spring, JPA, Hibernate, JWT authentication
 - **Storage**: MySQL, Heroku
 - **Deploy**: Heroku, Github page
 
-#Demo
+# Demo
 [toiviet](https://toiviet.app/)
 
-#Author
+# Author
 [Cuong Nguyen](https://github.com/cuonvc)
