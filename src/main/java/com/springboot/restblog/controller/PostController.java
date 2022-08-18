@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*", maxAge = 31536000)
 @RequestMapping("/api/v1")
 public class PostController {
 
