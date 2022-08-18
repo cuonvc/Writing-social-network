@@ -1,4 +1,4 @@
-# architectural
+# Architectural
 - **Restful API**
 
 # Tech stack
