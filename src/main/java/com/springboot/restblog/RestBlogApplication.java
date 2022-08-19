@@ -41,47 +41,47 @@ public class RestBlogApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		RoleEntity adminRole = new RoleEntity();
-		RoleEntity userRole = new RoleEntity();
-		UserEntity admin = new UserEntity();
-		UserProfileEntity userProfile = new UserProfileEntity();
-
-		if (!roleRepository.findByName("ROLE_ADMIN").isPresent()) {
-			defaulConfigAdmin(adminRole, userRole, admin, userProfile);
-		} else {
-			System.out.println("Database is exists old data");
-			System.out.println("Continute...");
-		}
+//		RoleEntity adminRole = new RoleEntity();
+//		RoleEntity userRole = new RoleEntity();
+//		UserEntity admin = new UserEntity();
+//		UserProfileEntity userProfile = new UserProfileEntity();
+//
+//		if (!roleRepository.findByName("ROLE_ADMIN").isPresent()) {
+//			defaulConfigAdmin(adminRole, userRole, admin, userProfile);
+//		} else {
+//			System.out.println("Database is exists old data");
+//			System.out.println("Continute...");
+//		}
 	}
 
-	private void defaulConfigAdmin(RoleEntity adminRole, RoleEntity userRole,
-								   UserEntity admin, UserProfileEntity userProfile) {
-
-		adminRole.setName("ROLE_ADMIN");
-		roleRepository.save(adminRole);
-
-
-		userRole.setName("ROLE_USER");
-		roleRepository.save(userRole);
-
-		Set<RoleEntity> roleEntities = new HashSet<>();
-		roleEntities.add(adminRole);
-
-
-		admin.setUsername("cuongadminnvc");
-		admin.setEmail("prnvc5802@gmail.com");
-		admin.setPassword("$2a$10$M4kpgo15C6SC/5eKPx40Juv2OyDq9Ys8za7ZESC9B00L8crY2mOhq");
-		admin.setDateRegistered(new Date());
-
-
-		userProfile.setUser(admin);
-		userProfile.setFirstName("Cuong");
-		userProfile.setLastName("Admin");
-		userProfile.setAvatarPhoto("uploaded-images/user-avatars/default/default-avt.png");
-		userProfile.setCoverPhoto("uploaded-images/user-covers/default/default-background.jpg");
-		profileRepository.save(userProfile);
-
-		admin.setRoles(roleEntities);
-		userRepository.save(admin);
-	}
+//	private void defaulConfigAdmin(RoleEntity adminRole, RoleEntity userRole,
+//								   UserEntity admin, UserProfileEntity userProfile) {
+//
+//		adminRole.setName("ROLE_ADMIN");
+//		roleRepository.save(adminRole);
+//
+//
+//		userRole.setName("ROLE_USER");
+//		roleRepository.save(userRole);
+//
+//		Set<RoleEntity> roleEntities = new HashSet<>();
+//		roleEntities.add(adminRole);
+//
+//
+//		admin.setUsername("cuongadminnvc");
+//		admin.setEmail("prnvc5802@gmail.com");
+//		admin.setPassword("$2a$10$M4kpgo15C6SC/5eKPx40Juv2OyDq9Ys8za7ZESC9B00L8crY2mOhq");
+//		admin.setDateRegistered(new Date());
+//
+//
+//		userProfile.setUser(admin);
+//		userProfile.setFirstName("Cuong");
+//		userProfile.setLastName("Admin");
+//		userProfile.setAvatarPhoto("uploaded-images/user-avatars/default/default-avt.png");
+//		userProfile.setCoverPhoto("uploaded-images/user-covers/default/default-background.jpg");
+//		profileRepository.save(userProfile);
+//
+//		admin.setRoles(roleEntities);
+//		userRepository.save(admin);
+//	}
 }
