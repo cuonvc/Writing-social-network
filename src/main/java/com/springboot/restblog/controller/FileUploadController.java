@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @RestController
+@CrossOrigin(origins = "*", maxAge = 31536000)
 @RequestMapping("/files")
 public class FileUploadController {
 

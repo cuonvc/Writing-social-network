@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "*", maxAge = 31536000)
 @RequestMapping("/api/v1")
 public class CategoryController {
 

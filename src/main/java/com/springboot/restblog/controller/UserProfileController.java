@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", maxAge = 31536000)
 @RequestMapping("/api/v1")
 @Validated
 public class UserProfileController {
